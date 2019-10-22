@@ -52,23 +52,23 @@ namespace Trains
                 trains = trains.Take(numberToPrint).ToList();
             }
 
-            Console.WriteLine($"Next {trains.Count}" + (trains.Count > 0 ? "trains" : "train" ) + $"between {from.stationName} and {to.stationName}:");
+            Console.WriteLine($"Next {trains.Count} " + (trains.Count > 0 ? "trains" : "train" ) + $" between {from.stationName} and {to.stationName}:");
 
             foreach (var t in trains)
             {
                 var sb = new StringBuilder();
-                sb.AppendLine(t.trainCategory == "Commuter" ? t.commuterLineID : t.trainType + t.trainNumber);
+                sb.AppendLine(t.trainCategory == "Commuter" ? t.commuterLineID : t.trainType + " " + t.trainNumber);
                 var departure = SearchForTimetableRow(fromShortCode, t.timeTableRows, TimetableRowType.Departure)[0];
-                sb.AppendLine($"\tScheduled departure time from {from.stationName}: {departure.scheduledTime}");
+                sb.AppendLine($"\tScheduled departure time from {from.stationName}: {departure.scheduledTime.ToLocalTime()}");
                 if (departure.liveEstimateTime != DateTime.MinValue)
                 {
-                    sb.AppendLine($"\tEstimated departure time: {departure.liveEstimateTime} ({departure.differenceInMinutes} minutes late");
+                    sb.AppendLine($"\tEstimated departure time: {departure.liveEstimateTime.ToLocalTime()} ({departure.differenceInMinutes} minutes late");
                 }
                 var arrival = SearchForTimetableRow(toShortCode, t.timeTableRows, TimetableRowType.Arrival)[0];
-                sb.AppendLine($"\tScheduled arrival time to {to.stationName}: {arrival.scheduledTime}");
+                sb.AppendLine($"\tScheduled arrival time to {to.stationName}: {arrival.scheduledTime.ToLocalTime()}");
                 if (arrival.liveEstimateTime != DateTime.MinValue)
                 {
-                    sb.AppendLine($"\tEstimated departure time: {arrival.liveEstimateTime} ({arrival.differenceInMinutes} minutes late");
+                    sb.AppendLine($"\tEstimated departure time: {arrival.liveEstimateTime.ToLocalTime()} ({arrival.differenceInMinutes} minutes late");
                 }
                 Console.WriteLine(sb.ToString());
             }
