@@ -19,23 +19,21 @@ namespace Trains
 
             foreach (var station in result)
             {
-                stationDictionary.Add(station.stationName, station);
+                stationDictionary.Add(station.stationName.ToUpper(), station);
                 //handles the case where Eno station has the short code eno
                 //note: still contains "stations" with type "TURNOUT_IN_THE_OPEN_LANE"
                 if (!stationDictionary.ContainsKey(station.stationShortCode))
                 {
                     stationDictionary.Add(station.stationShortCode, station);
                 }
-                else
-                {
-                    Console.WriteLine();
-                    Console.WriteLine();
-                }
-        }
-            foreach (var item in stationDictionary)
-            {
-                Console.WriteLine(item.Key + " " + item.Value);
             }
+        }
+
+        public static string ConvertUserInputStationToShortCode(string input)
+        {
+            Station userStation = stationDictionary[input.ToUpper().Trim()];
+            string shortcode = userStation.stationShortCode;
+            return shortcode;
         }
 
     }
