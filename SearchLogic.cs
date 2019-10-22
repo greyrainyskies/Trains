@@ -33,11 +33,62 @@ namespace Trains
             }
         }
 
+        
         public static string ConvertUserInputStationToShortCode(string input)
         {
             Station userStation = stationDictionary[input.ToUpper().Trim()];
             string shortcode = userStation.stationShortCode;
             return shortcode;
+        }
+
+
+        //gets trains between two stations specified by the user
+        public static List<Train> SearchTrainsBetweenStations(Station from, Station to)
+        {
+            var api = new APIUtil();
+            var fromShortCode = from.stationShortCode;
+            var toShortCode = to.stationShortCode;
+
+            var trains = api.TrainsBetween(fromShortCode, toShortCode);
+            return trains;
+        }
+
+        public static void GetTrainRoute(List<Train> trainList)
+        {
+            Console.WriteLine("trains operating in this route: ");
+            List<string> uniqueTrains = new List<string>();
+
+            var trainNumberQuery = from train in trainList
+                                   where train.commuterLineID != ""
+                                   select train.commuterLineID;
+            foreach (var item in trainNumberQuery)
+            {
+                Console.WriteLine(item);
+            }
+
+            foreach (var train in trainList)
+            {
+                if (train.commuterLineID == "")
+                {
+                    string nonCommuter = train.trainType + train.trainNumber.ToString();
+                    if (!uniqueTrains.Contains(nonCommuter)){
+                        uniqueTrains.Add(nonCommuter);
+                    }
+                }
+                else
+                {
+                    string commuter = train.commuterLineID;
+                    if (!uniqueTrains.Contains(commuter))
+                    {
+                        uniqueTrains.Add(commuter);
+                    }
+                }
+            }
+
+            foreach (var route in uniqueTrains)
+            {
+                Console.WriteLine(route);
+            }
         }
 
 

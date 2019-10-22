@@ -13,17 +13,12 @@ namespace Trains
             Console.WriteLine("Haetaan asemia...");
             SearchLogic.PopulateStationDictionary();
             Console.WriteLine(SearchLogic.ConvertUserInputStationToShortCode("eno"));
-            var oulu = new Station();
-            oulu.stationShortCode = "HKI";
-            var ruukki = new Station();
-            ruukki.stationShortCode = "TKL";
+            var hki = new Station();
+            hki.stationShortCode = "HKI";
+            var tpe = new Station();
+            tpe.stationShortCode = "TPE";
 
-            var tulos = SearchLogic.SearchBetweenStations(oulu, ruukki);
-
-            foreach (var tieto in tulos)
-            {
-                Console.WriteLine(tieto);
-            }
+            SearchLogic.GetTrainRoute(SearchLogic.SearchTrainsBetweenStations(hki, tpe));
         }
     }
 }
