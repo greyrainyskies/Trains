@@ -19,12 +19,7 @@ namespace Trains
             var ruukki = new Station();
             ruukki.stationShortCode = "TKL";
 
-            var tulos = SearchLogic.SearchBetweenStations(oulu, ruukki);
-
-            foreach (var tieto in tulos)
-            {
-                Console.WriteLine(tieto);
-            }
+            SearchLogic.SearchBetweenStations(oulu, ruukki);
         }
     }
 }

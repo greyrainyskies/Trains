@@ -39,7 +39,7 @@ namespace Trains
             return shortcode;
         }
 
-        public static List<string> SearchBetweenStations(Station from,  Station to)
+        public static void SearchBetweenStations(Station from,  Station to, int numberToPrint = 5)
         {
             var api = new APIUtil();
             var fromShortCode = from.stationShortCode;
@@ -47,17 +47,31 @@ namespace Trains
 
             var trains = api.TrainsBetween(fromShortCode, toShortCode);
 
-            var schedules = new List<string>();
+            if (trains.Count > numberToPrint)
+            {
+                trains = trains.Take(numberToPrint).ToList();
+            }
+
+            Console.WriteLine($"Next {trains.Count}" + (trains.Count > 0 ? "trains" : "train" ) + $"between {from.stationName} and {to.stationName}:");
 
             foreach (var t in trains)
             {
-                string trainName = t.trainCategory == "Commuter" ? t.commuterLineID : t.trainType + t.trainNumber;
+                var sb = new StringBuilder();
+                sb.AppendLine(t.trainCategory == "Commuter" ? t.commuterLineID : t.trainType + t.trainNumber);
                 var departure = SearchForTimetableRow(fromShortCode, t.timeTableRows, TimetableRowType.Departure)[0];
+                sb.AppendLine($"\tScheduled departure time from {from.stationName}: {departure.scheduledTime}");
+                if (departure.liveEstimateTime != DateTime.MinValue)
+                {
+                    sb.AppendLine($"\tEstimated departure time: {departure.liveEstimateTime} ({departure.differenceInMinutes} minutes late");
+                }
                 var arrival = SearchForTimetableRow(toShortCode, t.timeTableRows, TimetableRowType.Arrival)[0];
-                schedules.Add($"{trainName}, lähtee {departure.scheduledTime.ToString()}, saapuu {arrival.scheduledTime.ToString()}");
+                sb.AppendLine($"\tScheduled arrival time to {to.stationName}: {arrival.scheduledTime}");
+                if (arrival.liveEstimateTime != DateTime.MinValue)
+                {
+                    sb.AppendLine($"\tEstimated departure time: {arrival.liveEstimateTime} ({arrival.differenceInMinutes} minutes late");
+                }
+                Console.WriteLine(sb.ToString());
             }
-
-            return schedules;
         }
 
         static TimetableRow[] SearchForTimetableRow(string shortCode, List<TimetableRow> rows, TimetableRowType rowType)
