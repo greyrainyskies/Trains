@@ -11,12 +11,30 @@ namespace RataDigiTraffic.Model
 
         public bool passengerTraffic;
         public string countryCode;
-        public string stationName;
+        //public string stationName;
         public string stationShortCode;
         public int stationUICCode;
         public decimal latitude;
         public decimal longitude;
         public string type;
+
+        //below removes "asema" from the stationName
+        private string _stationName;
+        public string stationName
+        {
+            get { return _stationName; }
+            set {
+                    if (value.Contains(" asema"))
+                    {
+                        _stationName = value.Replace("asema", "").Trim();
+                    }
+                    else 
+                    { 
+                        _stationName = value; 
+                    }
+                }
+        }
+
     }
 
 

@@ -33,7 +33,6 @@ namespace Trains
             }
         }
 
-        
         public static string ConvertUserInputStationToShortCode(string input)
         {
             Station userStation = stationDictionary[input.ToUpper().Trim()];
@@ -53,47 +52,22 @@ namespace Trains
             return trains;
         }
 
+        //passes an int input (route number) to the api client and then prints the stations with arrival times
         public static void GetTrainRoute()
         {
             Console.WriteLine("Train route is: ");
 
-            APIUtil util = new APIUtil();
-            List<Train> TrainRoute = util.TrainRoute(9873); //Z-juna testaukseen
+            APIUtil api = new APIUtil();
+            List<Train> TrainRoute = api.TrainRoute(9873); //Z-juna testaukseen
 
             foreach (var station in TrainRoute[0].timeTableRows)//index zero because there will only be one item in the list so no need to iterate through the "list"
             {
-                if (station.commercialStop) //if a station where the train stops
+                if (station.commercialStop && station.type=="ARRIVAL") //if it's a station where the train stops
                 {
                     string stationName = stationDictionary[station.stationShortCode].stationName;
                     Console.WriteLine(stationName + ", " + station.scheduledTime.ToString());
                 }
             }
-            
-
-            //List<string> uniqueTrains = new List<string>();
-            //foreach (var train in trainList)
-            //{
-            //    if (train.commuterLineID == "")
-            //    {
-            //        string nonCommuter = train.trainType + train.trainNumber.ToString();
-            //        if (!uniqueTrains.Contains(nonCommuter)){
-            //            uniqueTrains.Add(nonCommuter);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        string commuter = train.commuterLineID;
-            //        if (!uniqueTrains.Contains(commuter))
-            //        {
-            //            uniqueTrains.Add(commuter);
-            //        }
-            //    }
-            //}
-
-            //foreach (var route in uniqueTrains)
-            //{
-            //    Console.WriteLine(route);
-            //}
         }
 
 
