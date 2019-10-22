@@ -11,21 +11,6 @@ namespace Trains
         {
             Console.WriteLine("Haetaan asemia...");
             SearchLogic.PopulateStationDictionary();
-            Console.WriteLine( SearchLogic.ConvertUserInputStationToShortCode("eno"));
+            Console.WriteLine(SearchLogic.ConvertUserInputStationToShortCode("eno"));
         }
-
-
-        //printtaa asemien nimet testiksi
-        //public static void GetStations()
-        //{
-        //    APIUtil utils = new APIUtil();
-        //    List<Station> result = utils.Stations();
-
-        //    foreach (var station in result)
-        //    {
-        //        Console.WriteLine(station.stationName);
-        //    }
-
-        //}
-    }
 }
