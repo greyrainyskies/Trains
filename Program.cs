@@ -1,5 +1,8 @@
-﻿using RataDigiTraffic.Model;
-using System;
+﻿using System;
+using RataDigiTraffic;
+using RataDigiTraffic.Model;
+using System.Collections.Generic;
+
 
 namespace Trains
 {
@@ -7,6 +10,10 @@ namespace Trains
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Haetaan asemia...");
+            SearchLogic.PopulateStationDictionary();
+            Console.WriteLine(SearchLogic.ConvertUserInputStationToShortCode("eno"));
+
             var oulu = new Station();
             oulu.stationShortCode = "HKI";
             var ruukki = new Station();
