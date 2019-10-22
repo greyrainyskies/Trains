@@ -19,10 +19,10 @@ namespace RataDigiTraffic.Model
         public bool runningCurrently; // true/false  Onko juna tällä hetkellä kulussa
         public bool cancelled; // true/false    Totta, jos junan peruminen on tehty 10 vuorokauden sisällä.Yli 10 vuorokautta sitten peruttuja junia ei palauteta rajapinnassa laisinkaan.
         public long version; // positive integer   Versionumero, jossa juna on viimeksi muuttunut
-        public List<Aikataulurivi> timeTableRows;//  Kuvaa saapumisia ja lähtöjä liikennepaikoilta.Järjestetty reitin mukaiseen järjestykseen.
+        public List<TimetableRow> timeTableRows;//  Kuvaa saapumisia ja lähtöjä liikennepaikoilta.Järjestetty reitin mukaiseen järjestykseen.
     }
 
-    public class Aikataulurivi
+    public class TimetableRow
     {
         public bool trainStopping;
         public string stationShortCode; // string Aseman lyhennekoodi
@@ -36,10 +36,10 @@ namespace RataDigiTraffic.Model
         public DateTime liveEstimateTime; // datetime Ennuste. Tyhjä jos juna ei ole matkalla
         public DateTime actualTime; // datetime Aika jolloin juna saapui tai lähti asemalta
         public int differenceInMinutes; // integer Vertaa aikataulun mukaista aikaa ennusteeseen tai toteutuneeseen aikaan ja kertoo erotuksen minuutteina
-        public List<Syy> causes;
+        public List<Cause> causes;
     }
 
-    public class Syy
+    public class Cause
     {
         //           Syytiedot.Kuvaavat syitä miksi juna oli myöhässä tai etuajassa pysähdyksellä.Kaikkia syyluokkia ja -tietoja ei julkaista.
         public string categoryCodeId;
