@@ -28,10 +28,10 @@ public List<Station> Stations()
             return res;
         }
 
-        public List<Train> TrainsBetween(string mistä, string minne)
-        {
+        public List<Train> TrainsBetween(string from, string to)
+        {   
             string json = "";
-            string url = $"https://rata.digitraffic.fi/api/v1/schedules?departure_station={mistä}&arrival_station={minne}";
+            string url = $"https://rata.digitraffic.fi/api/v1/schedules?departure_station={from}&arrival_station={to}";
 
             using (var client = new HttpClient())
             {
