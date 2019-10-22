@@ -19,7 +19,7 @@ namespace Trains
             var tpe = new Station();
             tpe.stationShortCode = "TPE";
 
-            SearchLogic.GetTrainRoute(SearchLogic.SearchTrainsBetweenStations(hki, tpe));
+            SearchLogic.GetTrainRoute();
         }
     }
 }

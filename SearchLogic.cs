@@ -14,6 +14,7 @@ namespace Trains
         static Dictionary<string, Station> stationDictionary = new Dictionary<string, Station>();
 
         //populates the stationDictionary with stationNames and stationShortCodes as keys and their respective station objects as values
+        //needs to be run at the start-up of the app! (route method relies on this)
         public static void PopulateStationDictionary()
         {
             APIUtil utils = new APIUtil();
@@ -52,42 +53,47 @@ namespace Trains
             return trains;
         }
 
-        public static void GetTrainRoute(List<Train> trainList)
+        public static void GetTrainRoute()
         {
-            Console.WriteLine("trains operating in this route: ");
-            List<string> uniqueTrains = new List<string>();
+            Console.WriteLine("Train route is: ");
 
-            //var trainNumberQuery = from train in trainList
-            //                       where train.commuterLineID != ""
-            //                       select train.commuterLineID;
-            //foreach (var item in trainNumberQuery)
+            APIUtil util = new APIUtil();
+            List<Train> TrainRoute = util.TrainRoute(9873); //Z-juna testaukseen
+
+            foreach (var station in TrainRoute[0].timeTableRows)//index zero because there will only be one item in the list so no need to iterate through the "list"
+            {
+                if (station.commercialStop) //if a station where the train stops
+                {
+                    string stationName = stationDictionary[station.stationShortCode].stationName;
+                    Console.WriteLine(stationName + ", " + station.scheduledTime.ToString());
+                }
+            }
+            
+
+            //List<string> uniqueTrains = new List<string>();
+            //foreach (var train in trainList)
             //{
-            //    Console.WriteLine(item);
+            //    if (train.commuterLineID == "")
+            //    {
+            //        string nonCommuter = train.trainType + train.trainNumber.ToString();
+            //        if (!uniqueTrains.Contains(nonCommuter)){
+            //            uniqueTrains.Add(nonCommuter);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        string commuter = train.commuterLineID;
+            //        if (!uniqueTrains.Contains(commuter))
+            //        {
+            //            uniqueTrains.Add(commuter);
+            //        }
+            //    }
             //}
 
-            foreach (var train in trainList)
-            {
-                if (train.commuterLineID == "")
-                {
-                    string nonCommuter = train.trainType + train.trainNumber.ToString();
-                    if (!uniqueTrains.Contains(nonCommuter)){
-                        uniqueTrains.Add(nonCommuter);
-                    }
-                }
-                else
-                {
-                    string commuter = train.commuterLineID;
-                    if (!uniqueTrains.Contains(commuter))
-                    {
-                        uniqueTrains.Add(commuter);
-                    }
-                }
-            }
-
-            foreach (var route in uniqueTrains)
-            {
-                Console.WriteLine(route);
-            }
+            //foreach (var route in uniqueTrains)
+            //{
+            //    Console.WriteLine(route);
+            //}
         }
 
 

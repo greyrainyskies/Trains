@@ -13,7 +13,7 @@ namespace RataDigiTraffic
     public class APIUtil
 
     {
-public List<Station> Stations()
+        public List<Station> Stations()
         {
             string json = "";
             using (var client = new HttpClient())
@@ -60,6 +60,25 @@ public List<Station> Stations()
             }
             List<TrackingMessage> res;
             res = JsonConvert.DeserializeObject<List<TrackingMessage>>(json);
+            return res;
+        }
+
+        //this client is for getting the train routes (of the current date) from the api
+        public List<Train> TrainRoute(int trainNumber)
+        {
+            string json = "";
+            string url = $"https://rata.digitraffic.fi/api/v1/trains/{DateTime.Today.ToString("yyyy-MM-dd")}/{trainNumber}";
+
+            using (var client = new HttpClient())
+            {
+
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var response = client.GetAsync(url).Result;
+                var responseString = response.Content.ReadAsStringAsync().Result;
+                json = responseString;
+            }
+            List<Train> res;
+            res = JsonConvert.DeserializeObject<List<Train>>(json);
             return res;
         }
     }
