@@ -57,13 +57,13 @@ namespace Trains
             Console.WriteLine("trains operating in this route: ");
             List<string> uniqueTrains = new List<string>();
 
-            var trainNumberQuery = from train in trainList
-                                   where train.commuterLineID != ""
-                                   select train.commuterLineID;
-            foreach (var item in trainNumberQuery)
-            {
-                Console.WriteLine(item);
-            }
+            //var trainNumberQuery = from train in trainList
+            //                       where train.commuterLineID != ""
+            //                       select train.commuterLineID;
+            //foreach (var item in trainNumberQuery)
+            //{
+            //    Console.WriteLine(item);
+            //}
 
             foreach (var train in trainList)
             {
