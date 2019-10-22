@@ -5,13 +5,13 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 
-
 namespace Trains
 {
+    // Author: Ville
     public enum TimetableRowType { Arrival, Departure };
     public static class SearchLogic
     {
-
+        // Author: Ville
         public static List<string> SearchBetweenStations(Station from,  Station to)
         {
             var api = new APIUtil();
@@ -33,6 +33,7 @@ namespace Trains
             return schedules;
         }
 
+        // Author: Ville
         static TimetableRow[] SearchForTimetableRow(string shortCode, List<TimetableRow> rows, TimetableRowType rowType)
         {
             var query = from row in rows
