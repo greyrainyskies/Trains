@@ -9,21 +9,21 @@ namespace Trains
     {
         static void Main(string[] args)
         {
-            GetStations();
+            SearchLogic.PopulateStationDictionary();
         }
 
 
         //printtaa asemien nimet testiksi
-        public static void GetStations()
-        {
-            APIUtil utils = new APIUtil();
-            List<Station> result = utils.Stations();
+        //public static void GetStations()
+        //{
+        //    APIUtil utils = new APIUtil();
+        //    List<Station> result = utils.Stations();
 
-            foreach (var station in result)
-            {
-                Console.WriteLine(station.stationName);
-            }
+        //    foreach (var station in result)
+        //    {
+        //        Console.WriteLine(station.stationName);
+        //    }
 
-        }
+        //}
     }
 }
