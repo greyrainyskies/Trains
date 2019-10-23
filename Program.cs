@@ -12,6 +12,7 @@ namespace Trains
         {
             Console.WriteLine("Haetaan asemia...");
             SearchLogic.PopulateStationDictionary();
+            ConsoleUI.UserInputFromTo();
             Console.WriteLine(SearchLogic.ConvertUserInputStationToShortCode("eno"));
 
 
