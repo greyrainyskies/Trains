@@ -56,6 +56,7 @@ namespace Trains
         //passes an int input (route number) to the api client and then prints the stations with arrival times
         public static void GetTrainRoute()
         {
+            //parsing the input train number
             int trainNum = 0;
             bool format = false;
             while (!format)
@@ -83,14 +84,50 @@ namespace Trains
                 Console.WriteLine("There are no trains operating with the given train number.");
                 return;
             }
+            //end of train number parsing
 
             Console.WriteLine($"The timetable for train {trainNum} is: ");
+            Console.WriteLine();
+            Console.WriteLine($"{"Station",15}{"Arrival time",12}{"Stop duration (minutes)", 12}");
+
+            //initialisation of variables used in loop below
+            DateTime stationArrivalTime = default;
+            string shortStationArrivalTime = "";
+
+            double stationStopDuration = 0;
+            bool firstStation = true;
+            bool arrivalStation = true;
+            string stationName = "";
+
             foreach (var station in TrainRoute[0].timeTableRows)//index zero because there will only be one item in the list so no need to iterate through the "list"
             {
-                if (station.commercialStop && station.type=="ARRIVAL") //if it's a station where the train stops
+                if (station.commercialStop) //if it's a station where the train stops
                 {
-                    string stationName = stationDictionary[station.stationShortCode].stationName;
-                    Console.WriteLine($"{stationName, 20}{station.scheduledTime.ToLocalTime().ToString("HH:mm"), 10}");
+                    if(station.type == "ARRIVAL")
+                    {
+                        stationArrivalTime = station.scheduledTime;
+                        shortStationArrivalTime = station.scheduledTime.ToLocalTime().ToString("HH:mm");
+                        stationName = stationDictionary[station.stationShortCode].stationName;
+                        arrivalStation = true;
+
+                    }
+                    if (station.type == "DEPARTURE" && firstStation == false)
+                    {
+                        stationStopDuration = (station.scheduledTime - stationArrivalTime).TotalMinutes;
+                        arrivalStation = false;
+                    }
+                    if (firstStation) //first station (when it doesn't have an arrival-pair)
+                    {
+                        stationName = stationDictionary[station.stationShortCode].stationName;
+                        shortStationArrivalTime = station.scheduledTime.ToLocalTime().ToString("HH:mm");
+                    }
+
+                    if (arrivalStation) //prints only those stations where the train arrives --> avoids printing the station twice (arrival and departure)
+                    {
+                        Console.WriteLine($"{stationName, 15}{shortStationArrivalTime, 12}{(stationStopDuration>0 ? stationStopDuration.ToString():""), 12}");
+                    }
+                    
+                    firstStation = false;
                 }
             }
         }
