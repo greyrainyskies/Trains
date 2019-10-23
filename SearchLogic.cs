@@ -71,7 +71,6 @@ namespace Trains
         }
 
 
-
         public static void SearchBetweenStations(Station from, Station to, int numberToPrint = 5)
         {
             var api = new APIUtil();
