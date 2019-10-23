@@ -11,7 +11,7 @@ namespace Trains
 
     static class SearchLogic
     {
-        static Dictionary<string, Station> stationDictionary = new Dictionary<string, Station>();
+        public static Dictionary<string, Station> stationDictionary = new Dictionary<string, Station>();
 
         //populates the stationDictionary with stationNames and stationShortCodes as keys and their respective station objects as values
         //needs to be run at the start-up of the app! (route method relies on this)
@@ -33,12 +33,31 @@ namespace Trains
             }
         }
 
+        public static Station ConvertUserInputStringToStation(string input)
+        {
+
+          
+            if (stationDictionary.ContainsKey(input))
+            { 
+                Station userStation = stationDictionary[input];
+                return userStation;
+            }
+
+            else {
+
+                throw new ArgumentException("Not found");
+            }
+           
+        }
+
         public static string ConvertUserInputStationToShortCode(string input)
         {
             Station userStation = stationDictionary[input.ToUpper().Trim()];
             string shortcode = userStation.stationShortCode;
             return shortcode;
         }
+
+
 
 
         //gets trains between two stations specified by the user
