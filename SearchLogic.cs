@@ -170,12 +170,6 @@ namespace Trains
             }
         }
 
-        public static decimal CalculateDistance(decimal long1, decimal lat1, decimal long2, decimal lat2)
-        {
-            decimal distance = Convert.ToDecimal(Math.Sqrt(Math.Pow((double)(long1 - long2), 2) + Math.Pow((double)(lat1 - lat2), 2)));
-            return distance;
-        }
-
         public static void SearchBetweenStations(Station from, Station to, int numberToPrint = 5)
         {
             var api = new APIUtil();

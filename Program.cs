@@ -22,13 +22,6 @@ namespace Trains
             to.stationShortCode = "PSL";
             to.stationName = "Pasila";
             SearchLogic.SearchBetweenStations(from, to);
-            //List<Train> trains = SearchLogic.SearchTrainsBetweenStations(from, to);
-
-            //foreach (var train in trains)
-            //{
-            //    Console.WriteLine(train.trainNumber);
-            //}
-            SearchLogic.CalculateDistance(6, 5, 2, 2);
 
             SearchLogic.GetTrainRoute();
 
@@ -36,7 +29,7 @@ namespace Trains
             Console.WriteLine("testiasema:" + testiasema.stationName);
             Console.WriteLine("longitude " + testiasema.longitude);
             Console.WriteLine("lat " + testiasema.latitude);
-            Console.WriteLine("distance = " + SearchLogic.GetTrainDistanceFromStation(testiasema)+"km");//junan etäisyys pasilan asemalta
+            Console.WriteLine("distance from station: d" + SearchLogic.GetTrainDistanceFromStation(testiasema)+"km");//junan etäisyys pasilan asemalta
         }
     }
 }
