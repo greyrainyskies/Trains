@@ -11,9 +11,9 @@ namespace Trains
         static void Main(string[] args)
         {
 
-            ConsoleUI ui = new ConsoleUI();
+            //ConsoleUI ui = new ConsoleUI();
 
-            ConsoleUI.UserInput();
+            ConsoleUI.StartMenu();
 
 
 

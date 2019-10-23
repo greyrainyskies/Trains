@@ -8,14 +8,14 @@ namespace Trains
     class ConsoleUI
     {
 
-        public static void UserInputFromTo()
+        public static void StartMenu()
         {
 
             Console.Title = "UI";
             string title = @"
 +-----------------------------------------------------+
 |                                                     |
-|        ▀▄▀▄▀▄▀▄▀▄▀▄ тraιnѕearcн ▄▀▄▀▄▀▄▀▄▀▄▀        |
+|        ▀▄▀▄▀▄▀▄▀▄▀▄ TrainSearch ▄▀▄▀▄▀▄▀▄▀▄▀        |
 |                                                     |
 +-----------------------------------------------------+
 |                                                     |
@@ -36,26 +36,31 @@ namespace Trains
 +-----------------------------------------------------+
 ";
 
+
             Console.WriteLine(title);
             ConsoleKeyInfo switchKey = Console.ReadKey();
             Console.Clear();
+
+            bool repeat = true;
+
+            while (repeat == true) { 
+
             switch (switchKey.Key)
             {
                 case ConsoleKey.D1:
-                    // Console.WriteLine("1");
-                    var from = new Station();
-                    from.stationShortCode = "HKI";
-                    from.stationName = "Helsinki";
-                    var to = new Station();
-                    to.stationShortCode = "PSL";
-                    to.stationName = "Pasila";
-                    SearchLogic.SearchBetweenStations(from, to);
+                    UserInput();
                     break;
                 case ConsoleKey.D2:
                     SearchLogic.GetTrainRoute();
                     break;
-                default:
+               case ConsoleKey.Escape:
+                    repeat = false;
+                    break;
+
+                    default:
                     throw new ArgumentException("Unhandled value: " + switchKey.ToString());
+
+            }
 
             }
 
@@ -76,7 +81,7 @@ namespace Trains
 
             string to = Console.ReadLine().ToUpper().Trim();
 
-
+            Console.WriteLine("");
 
 
 
@@ -102,14 +107,8 @@ namespace Trains
 
             Console.WriteLine("");
 
-            //SearchLogic.SearchBetweenStations(from, to);
-            SearchLogic.GetTrainRoute();
-
-
-            //Console.Write("Search train:");
-            //string trainSearch = Console.ReadLine();
-            //Console.Write("Search station:");
-            //string stationSearch = Console.ReadLine();
+            Console.WriteLine("Press any key to ");
+            Console.ReadKey();
 
 
 
