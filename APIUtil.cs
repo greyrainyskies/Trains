@@ -99,6 +99,24 @@ namespace RataDigiTraffic
             res = JsonConvert.DeserializeObject<List<Train>>(json);
             return res;
         }
+
+        public List<TrainLocation> TrainLocation(int trainNumber)
+        {
+            string json = "";
+            string url = $"https://rata.digitraffic.fi/api/v1/train-locations/latest/{trainNumber}";
+
+            using (var client = new HttpClient())
+            {
+
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var response = client.GetAsync(url).Result;
+                var responseString = response.Content.ReadAsStringAsync().Result;
+                json = responseString;
+            }
+            List<TrainLocation> res;
+            res = JsonConvert.DeserializeObject<List<TrainLocation>>(json);
+            return res;
+        }
     }
 
 

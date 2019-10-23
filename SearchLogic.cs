@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using System.Text.RegularExpressions;
+using GeoCoordinatePortable;
 
 namespace Trains
 {
@@ -12,7 +13,7 @@ namespace Trains
 
     static class SearchLogic
     {
-        static Dictionary<string, Station> stationDictionary = new Dictionary<string, Station>();
+        public static Dictionary<string, Station> stationDictionary = new Dictionary<string, Station>();
 
         //populates the stationDictionary with stationNames and stationShortCodes as keys and their respective station objects as values
         //needs to be run at the start-up of the app! (route method relies on this)
@@ -56,29 +57,10 @@ namespace Trains
         //passes an int input (route number) to the api client and then prints the stations with arrival times
         public static void GetTrainRoute()
         {
-            //parsing the input train number
-            int trainNum = 0;
-            bool format = false;
-            while (!format)
-            {
-                Console.WriteLine("Enter a train number:");
-                try
-                {
-                    string tempTrainNum = Console.ReadLine();
-                    string numberOnly = Regex.Replace(tempTrainNum, "[^0-9.]", "");
-                    trainNum = int.Parse(numberOnly);
-
-                    format = true;
-                }
-                catch(FormatException)
-                {
-                    Console.WriteLine("Please enter a valid train number!");
-                }
-            }
-
+            int trainNum = GetTrainNumber(); //defined under this method
 
             APIUtil api = new APIUtil();
-            List<Train> TrainRoute = api.TrainRoute(trainNum); 
+            List<Train> TrainRoute = api.TrainRoute(trainNum);
             if (TrainRoute.Count == 0)
             {
                 Console.WriteLine("There are no trains operating with the given train number.");
@@ -88,7 +70,7 @@ namespace Trains
 
             Console.WriteLine($"The timetable for train {trainNum} is: ");
             Console.WriteLine();
-            Console.WriteLine($"{"Station",-15}{"Time",10}{"Stop (minutes)", 20}");
+            Console.WriteLine($"{"Station",-15}{"Time",10}{"Stop (minutes)",20}");
 
             //initialisation of variables used in loop below
             DateTime stationArrivalTime = default;
@@ -99,7 +81,7 @@ namespace Trains
             string stationName = "";
             List<TimetableRow> station = TrainRoute[0].timeTableRows;
 
-            for (int i=0; i < station.Count; i++)//index zero because there will only be one item in the list so no need to iterate through the "list"
+            for (int i = 0; i < station.Count; i++)//index zero because there will only be one item in the list so no need to iterate through the "list"
             {
                 if (station[i].commercialStop) //if it's a station where the train stops
                 {
@@ -109,11 +91,11 @@ namespace Trains
                         shortStationArrivalTime = station[i].scheduledTime.ToLocalTime().ToString("HH:mm");
                         stationName = stationDictionary[station[i].stationShortCode].stationName;
 
-                        if (i < station.Count-1 && station[i+1].type == "DEPARTURE")
+                        if (i < station.Count - 1 && station[i + 1].type == "DEPARTURE")
                         {
-                            stationStopDuration = (station[i+1].scheduledTime - stationArrivalTime).TotalMinutes;
+                            stationStopDuration = (station[i + 1].scheduledTime - stationArrivalTime).TotalMinutes;
                         }
-                        Console.WriteLine($"{stationName,15}{shortStationArrivalTime,12}{(i==station.Count-1 ? "" : (stationStopDuration > 0 ? stationStopDuration.ToString() : "")),12}");
+                        Console.WriteLine($"{stationName,15}{shortStationArrivalTime,12}{(i == station.Count - 1 ? "" : (stationStopDuration > 0 ? stationStopDuration.ToString() : "")),12}");
                     }
 
                     if (firstStation) //first station (when it doesn't have an arrival-pair)
@@ -127,6 +109,72 @@ namespace Trains
             }
         }
 
+
+        //returns the train number that user provided, removes possible non-numbers
+        private static int GetTrainNumber()
+        {
+            //parsing the input train number
+            int trainNum = 0;
+            bool format = false;
+            while (!format)
+            {
+                Console.WriteLine("Enter a train number:");
+                try
+                {
+                    string tempTrainNum = Console.ReadLine().Trim();
+                    string numberOnly = Regex.Replace(tempTrainNum, "[^0-9.]", "");
+                    trainNum = int.Parse(numberOnly);
+
+                    format = true;
+                }
+                catch (FormatException)
+                {
+                    Console.WriteLine("Please enter a valid train number!");
+                }
+            }
+            return trainNum;
+        }
+
+        public static decimal GetTrainDistanceFromStation(Station station)
+        {
+            int trainNum = GetTrainNumber();
+            APIUtil api = new APIUtil();
+            List<TrainLocation> trainLocation = api.TrainLocation(trainNum);
+
+            try
+            {
+                //calculating distance
+                decimal longT = trainLocation[0].location.coordinates[0];
+                decimal latT = trainLocation[0].location.coordinates[1];
+                decimal longS = station.longitude;
+                decimal latS = station.latitude;
+
+                var coordT = new GeoCoordinate((double)latT, (double)longT);
+                var coordS = new GeoCoordinate((double)latS, (double)longS);
+
+                decimal distInMeters = Convert.ToDecimal(coordT.GetDistanceTo(coordS));
+                //return CalculateDistance(longT, latT, longS, latS);
+                decimal distInKm = Math.Round((distInMeters / 1000),1);
+
+                return distInKm;
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Train is currently not operational. Press 'Esc' to exit, otherwise press any key to try again.");
+                ConsoleKeyInfo key = Console.ReadKey();
+                if(key.Key == ConsoleKey.Escape)
+                {
+                    return 0; 
+                }
+                else { return GetTrainDistanceFromStation(station); }
+            }
+        }
+
+        public static decimal CalculateDistance(decimal long1, decimal lat1, decimal long2, decimal lat2)
+        {
+            decimal distance = Convert.ToDecimal(Math.Sqrt(Math.Pow((double)(long1 - long2), 2) + Math.Pow((double)(lat1 - lat2), 2)));
+            return distance;
+        }
 
         public static void SearchBetweenStations(Station from, Station to, int numberToPrint = 5)
         {

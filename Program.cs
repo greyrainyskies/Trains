@@ -28,8 +28,15 @@ namespace Trains
             //{
             //    Console.WriteLine(train.trainNumber);
             //}
+            SearchLogic.CalculateDistance(6, 5, 2, 2);
 
             SearchLogic.GetTrainRoute();
+
+            Station testiasema = SearchLogic.stationDictionary["JOENSUU"];
+            Console.WriteLine("testiasema:" + testiasema.stationName);
+            Console.WriteLine("longitude " + testiasema.longitude);
+            Console.WriteLine("lat " + testiasema.latitude);
+            Console.WriteLine("distance = " + SearchLogic.GetTrainDistanceFromStation(testiasema)+"km");//junan etäisyys pasilan asemalta
         }
     }
 }
