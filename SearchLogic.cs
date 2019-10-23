@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Trains
 {
@@ -55,17 +56,41 @@ namespace Trains
         //passes an int input (route number) to the api client and then prints the stations with arrival times
         public static void GetTrainRoute()
         {
-            Console.WriteLine("Train route is: ");
+            int trainNum = 0;
+            bool format = false;
+            while (!format)
+            {
+                Console.WriteLine("Enter a train number:");
+                try
+                {
+                    string tempTrainNum = Console.ReadLine();
+                    string numberOnly = Regex.Replace(tempTrainNum, "[^0-9.]", "");
+                    trainNum = int.Parse(numberOnly);
+
+                    format = true;
+                }
+                catch(FormatException)
+                {
+                    Console.WriteLine("Please enter a valid train number!");
+                }
+            }
+
 
             APIUtil api = new APIUtil();
-            List<Train> TrainRoute = api.TrainRoute(9873); //Z-juna testaukseen
+            List<Train> TrainRoute = api.TrainRoute(trainNum); 
+            if (TrainRoute.Count == 0)
+            {
+                Console.WriteLine("There are no trains operating with the given train number.");
+                return;
+            }
 
+            Console.WriteLine($"The timetable for train {trainNum} is: ");
             foreach (var station in TrainRoute[0].timeTableRows)//index zero because there will only be one item in the list so no need to iterate through the "list"
             {
                 if (station.commercialStop && station.type=="ARRIVAL") //if it's a station where the train stops
                 {
                     string stationName = stationDictionary[station.stationShortCode].stationName;
-                    Console.WriteLine(stationName + ", " + station.scheduledTime.ToString());
+                    Console.WriteLine($"{stationName, 20}{station.scheduledTime.ToLocalTime().ToString("HH:mm"), 10}");
                 }
             }
         }
