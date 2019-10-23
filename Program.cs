@@ -13,6 +13,8 @@ namespace Trains
             Console.WriteLine("Haetaan asemia...");
             SearchLogic.PopulateStationDictionary();
             Console.WriteLine(SearchLogic.ConvertUserInputStationToShortCode("eno"));
+            Console.WriteLine(SearchLogic.ConvertUserInputStationToShortCode("Seinäjoki"));
+            Console.WriteLine(SearchLogic.ConvertUserInputStationToShortCode("Tampere"));
 
 
             var from = new Station();
@@ -23,6 +25,10 @@ namespace Trains
             to.stationName = "Pasila";
             SearchLogic.SearchBetweenStations(from, to);
             SearchLogic.GetTrainRoute();
+
+            var api = new APIUtil();
+            api.CurrentStationInfo("PSL");
+            SearchLogic.CurrentStationInfo(to);
         }
     }
 }

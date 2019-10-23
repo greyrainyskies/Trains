@@ -62,7 +62,7 @@ namespace Trains
 
             foreach (var station in TrainRoute[0].timeTableRows)//index zero because there will only be one item in the list so no need to iterate through the "list"
             {
-                if (station.commercialStop && station.type=="ARRIVAL") //if it's a station where the train stops
+                if (station.commercialStop && station.type == "ARRIVAL") //if it's a station where the train stops
                 {
                     string stationName = stationDictionary[station.stationShortCode].stationName;
                     Console.WriteLine(stationName + ", " + station.scheduledTime.ToString());
@@ -79,12 +79,12 @@ namespace Trains
 
             var trains = api.TrainsBetween(fromShortCode, toShortCode, numberToPrint);
 
-            Console.WriteLine($"Next {trains.Count} " + (trains.Count > 0 ? "trains" : "train" ) + $" between {from.stationName} and {to.stationName}:");
+            Console.WriteLine($"Next {trains.Count} " + (trains.Count > 0 ? "trains" : "train") + $" between {from.stationName} and {to.stationName}:");
 
             foreach (var t in trains)
             {
                 var sb = new StringBuilder();
-                sb.AppendLine(t.trainCategory == "Commuter" ? "Commuter train " + t.commuterLineID : t.trainType + " " + t.trainNumber);
+                sb.AppendLine(TrainName(t));
                 var departure = SearchForTimetableRow(fromShortCode, t.timeTableRows, TimetableRowType.Departure)[0];
                 sb.AppendLine($"\tScheduled departure time from {from.stationName}: {departure.scheduledTime.ToLocalTime()}");
                 if (departure.liveEstimateTime != DateTime.MinValue)
@@ -101,12 +101,55 @@ namespace Trains
             }
         }
 
+        public static void CurrentStationInfo(Station station, int minutesBeforeDeparture = 15, int minutesAfterDeparture = 15, int minutesBeforeArrival = 15, int minutesAfterArrival = 15)
+        {
+            var api = new APIUtil();
+            var stationShortCode = station.stationShortCode;
+
+            try
+            {
+                var upcoming = api.CurrentStationInfo(stationShortCode, minutesBeforeDeparture, 0, minutesBeforeArrival, 0);
+
+                Console.WriteLine($"Current arrivals at {station.stationName}");
+
+                foreach (var train in upcoming)
+                {
+                    var sb = new StringBuilder();
+                    sb.Append(TrainName(train));
+                    var arrival = SearchForTimetableRow(stationShortCode, train.timeTableRows, TimetableRowType.Arrival)[0];
+                    sb.Append("\t" + arrival.scheduledTime.ToLocalTime());
+                    if (arrival.liveEstimateTime != DateTime.MinValue && arrival.liveEstimateTime != arrival.scheduledTime)
+                    {
+                        sb.Append("\t=>\t");
+                        sb.Append(arrival.liveEstimateTime.ToLocalTime());
+                        sb.Append("\t(");
+                        var difference = arrival.differenceInMinutes;
+                        sb.Append(difference < 1 ? "< 1" : difference.ToString());
+                        sb.Append(difference > 1 ? " minutes " : " minute ");
+                        sb.Append("late.)");
+                    }
+                    Console.WriteLine(sb.ToString());
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+
+        }
+
         static TimetableRow[] SearchForTimetableRow(string shortCode, List<TimetableRow> rows, TimetableRowType rowType)
         {
             var query = from row in rows
                         where row.stationShortCode == shortCode && row.type == (rowType == TimetableRowType.Arrival ? "ARRIVAL" : "DEPARTURE")
                         select row;
             return query.ToArray();
+        }
+
+        static string TrainName(Train train)
+        {
+            return train.trainCategory == "Commuter" ? "Commuter train " + train.commuterLineID : train.trainType + " " + train.trainNumber;
         }
     }
 }

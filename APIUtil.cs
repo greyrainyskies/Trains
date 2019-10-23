@@ -63,6 +63,36 @@ namespace RataDigiTraffic
             }
         }
 
+        public List<Train> CurrentStationInfo(string stationShortCode, int minutesBeforeDeparture = 15, int minutesAfterDeparture = 15, int minutesBeforeArrival = 15, int minutesAfterArrival = 15)
+        {
+            string json = "";
+            string url = $"https://rata.digitraffic.fi/api/v1/live-trains/station/{stationShortCode}?minutes_before_departure={minutesBeforeDeparture}&minutes_after_departure={minutesAfterDeparture}&minutes_before_arrival={minutesBeforeArrival}&minutes_after_arrival={minutesAfterArrival}";
+
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var response = client.GetAsync(url).Result;
+                var responseString = response.Content.ReadAsStringAsync().Result;
+                json = responseString;
+            }
+            List<Train> res;
+            if (!string.IsNullOrEmpty(json))
+            {
+            res = JsonConvert.DeserializeObject<List<Train>>(json);
+            }
+            else
+            {
+                throw new ArgumentException("No trains found in the nearby future.");
+            }
+            return res;
+        }
+
+        //public List<Train> NextStationInfo(string stationShortCode)
+        //{
+        //    string json = "";
+        //    string url = $"https://rata.digitraffic.fi/api/v1/";
+        //}
+
         public List<TrackingMessage> StationTrains(string paikka )
         {
             string json = "";
