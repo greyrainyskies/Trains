@@ -66,7 +66,9 @@ namespace RataDigiTraffic
         public List<Train> CurrentStationInfo(string stationShortCode, int minutesBeforeDeparture = 15, int minutesAfterDeparture = 15, int minutesBeforeArrival = 15, int minutesAfterArrival = 15)
         {
             string json = "";
-            string url = $"https://rata.digitraffic.fi/api/v1/live-trains/station/{stationShortCode}?minutes_before_departure={minutesBeforeDeparture}&minutes_after_departure={minutesAfterDeparture}&minutes_before_arrival={minutesBeforeArrival}&minutes_after_arrival={minutesAfterArrival}";
+            string url = $"https://rata.digitraffic.fi/api/v1/live-trains/station/{stationShortCode}?minutes_before_departure={minutesBeforeDeparture}&minutes_after_departure={minutesAfterDeparture}&minutes_before_arrival={minutesBeforeArrival}&minutes_after_arrival={minutesAfterArrival}&train_categories=Commuter,Long-distance";
+
+            Console.WriteLine(url);
 
             using (var client = new HttpClient())
             {

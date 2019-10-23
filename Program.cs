@@ -26,8 +26,6 @@ namespace Trains
             SearchLogic.SearchBetweenStations(from, to);
             SearchLogic.GetTrainRoute();
 
-            var api = new APIUtil();
-            api.CurrentStationInfo("PSL");
             SearchLogic.CurrentStationInfo(to);
         }
     }
