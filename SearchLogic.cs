@@ -77,19 +77,14 @@ namespace Trains
             var fromShortCode = from.stationShortCode;
             var toShortCode = to.stationShortCode;
 
-            var trains = api.TrainsBetween(fromShortCode, toShortCode);
-
-            if (trains.Count > numberToPrint)
-            {
-                trains = trains.Take(numberToPrint).ToList();
-            }
+            var trains = api.TrainsBetween(fromShortCode, toShortCode, numberToPrint);
 
             Console.WriteLine($"Next {trains.Count} " + (trains.Count > 0 ? "trains" : "train" ) + $" between {from.stationName} and {to.stationName}:");
 
             foreach (var t in trains)
             {
                 var sb = new StringBuilder();
-                sb.AppendLine(t.trainCategory == "Commuter" ? t.commuterLineID : t.trainType + " " + t.trainNumber);
+                sb.AppendLine(t.trainCategory == "Commuter" ? "Commuter train " + t.commuterLineID : t.trainType + " " + t.trainNumber);
                 var departure = SearchForTimetableRow(fromShortCode, t.timeTableRows, TimetableRowType.Departure)[0];
                 sb.AppendLine($"\tScheduled departure time from {from.stationName}: {departure.scheduledTime.ToLocalTime()}");
                 if (departure.liveEstimateTime != DateTime.MinValue)

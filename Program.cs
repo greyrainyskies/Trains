@@ -14,11 +14,14 @@ namespace Trains
             SearchLogic.PopulateStationDictionary();
             Console.WriteLine(SearchLogic.ConvertUserInputStationToShortCode("eno"));
 
-            var hki = new Station();
-            hki.stationShortCode = "HKI";
-            var tpe = new Station();
-            tpe.stationShortCode = "TPE";
 
+            var from = new Station();
+            from.stationShortCode = "HKI";
+            from.stationName = "Helsinki";
+            var to = new Station();
+            to.stationShortCode = "PSL";
+            to.stationName = "Pasila";
+            SearchLogic.SearchBetweenStations(from, to);
             SearchLogic.GetTrainRoute();
         }
     }
