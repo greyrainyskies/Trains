@@ -22,6 +22,13 @@ namespace Trains
             to.stationShortCode = "PSL";
             to.stationName = "Pasila";
             SearchLogic.SearchBetweenStations(from, to);
+            //List<Train> trains = SearchLogic.SearchTrainsBetweenStations(from, to);
+
+            //foreach (var train in trains)
+            //{
+            //    Console.WriteLine(train.trainNumber);
+            //}
+
             SearchLogic.GetTrainRoute();
         }
     }
