@@ -23,10 +23,22 @@ namespace Trains
             var to = new Station();
             to.stationShortCode = "PSL";
             to.stationName = "Pasila";
-            SearchLogic.SearchBetweenStations(from, to);
-            SearchLogic.GetTrainRoute();
-
-            SearchLogic.CurrentStationInfo(to);
+            var stat = new Station();
+            stat.stationShortCode = "RKI";
+            stat.stationName = "Ruukki";
+            //SearchLogic.SearchBetweenStations(from, to);
+            //SearchLogic.GetTrainRoute();
+            //SearchLogic.CurrentStationInfo(to);
+            var trainList = SearchLogic.CurrentStationInfoWithLimit(to);
+            SearchLogic.ShowUpcomingArrivals(to, trainList);
+            SearchLogic.ShowPastArrivals(to, trainList);
+            SearchLogic.ShowUpcomingDepartures(to, trainList);
+            SearchLogic.ShowPastDepartures(to, trainList);
+            var trainList2 = SearchLogic.CurrentStationInfoWithLimit(stat);
+            SearchLogic.ShowUpcomingArrivals(stat, trainList2);
+            SearchLogic.ShowPastArrivals(stat, trainList2);
+            SearchLogic.ShowUpcomingDepartures(stat, trainList2);
+            SearchLogic.ShowPastDepartures(stat, trainList2);
         }
     }
 }
