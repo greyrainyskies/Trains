@@ -10,13 +10,8 @@ namespace Trains
     {
         static void Main(string[] args)
         {
-
             //ConsoleUI ui = new ConsoleUI();
-
             ConsoleUI.StartMenu();
-
-
-
 
 
 
@@ -66,6 +61,15 @@ namespace Trains
             SearchLogic.ShowPastArrivals(stat, trainList2);
             SearchLogic.ShowUpcomingDepartures(stat, trainList2);
             SearchLogic.ShowPastDepartures(stat, trainList2);
+            SearchLogic.SearchBetweenStations(from, to);
+
+            SearchLogic.GetTrainRoute();
+
+            Station testiasema = SearchLogic.stationDictionary["JOENSUU"];
+            Console.WriteLine("testiasema:" + testiasema.stationName);
+            Console.WriteLine("longitude " + testiasema.longitude);
+            Console.WriteLine("lat " + testiasema.latitude);
+            Console.WriteLine("distance from station: d" + SearchLogic.GetTrainDistanceFromStation(testiasema)+"km"); //junan etäisyys pasilan asemalta
         }
     }
 }

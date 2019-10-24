@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System.Text.RegularExpressions;
+using GeoCoordinatePortable;
 
 namespace Trains
 {
@@ -74,21 +76,118 @@ namespace Trains
         //passes an int input (route number) to the api client and then prints the stations with arrival times
         public static void GetTrainRoute()
         {
-            Console.WriteLine("Train route is: ");
+            int trainNum = GetTrainNumber(); //defined under this method
 
             APIUtil api = new APIUtil();
-            List<Train> TrainRoute = api.TrainRoute(9873); //Z-juna testaukseen
-
-            foreach (var station in TrainRoute[0].timeTableRows)//index zero because there will only be one item in the list so no need to iterate through the "list"
+            List<Train> TrainRoute = api.TrainRoute(trainNum);
+            if (TrainRoute.Count == 0)
             {
-                if (station.commercialStop && station.type == "ARRIVAL") //if it's a station where the train stops
+                Console.WriteLine("There are no trains operating with the given train number.");
+                return;
+            }
+            //end of train number parsing
+
+            Console.WriteLine($"The timetable for train {trainNum} is: ");
+            Console.WriteLine();
+            Console.WriteLine($"{"Station",-15}{"Time",10}{"Stop (minutes)",20}");
+
+            //initialisation of variables used in loop below
+            DateTime stationArrivalTime = default;
+            string shortStationArrivalTime = "";
+
+            double stationStopDuration = 0;
+            bool firstStation = true;
+            string stationName = "";
+            List<TimetableRow> station = TrainRoute[0].timeTableRows;
+
+            for (int i = 0; i < station.Count; i++)//index zero because there will only be one item in the list so no need to iterate through the "list"
+            {
+                if (station[i].commercialStop) //if it's a station where the train stops
                 {
-                    string stationName = stationDictionary[station.stationShortCode].stationName;
-                    Console.WriteLine(stationName + ", " + station.scheduledTime.ToString());
+                    if (station[i].type == "ARRIVAL")
+                    {
+                        stationArrivalTime = station[i].scheduledTime;
+                        shortStationArrivalTime = station[i].scheduledTime.ToLocalTime().ToString("HH:mm");
+                        stationName = stationDictionary[station[i].stationShortCode].stationName;
+
+                        if (i < station.Count - 1 && station[i + 1].type == "DEPARTURE")
+                        {
+                            stationStopDuration = (station[i + 1].scheduledTime - stationArrivalTime).TotalMinutes;
+                        }
+                        Console.WriteLine($"{stationName,15}{shortStationArrivalTime,12}{(i == station.Count - 1 ? "" : (stationStopDuration > 0 ? stationStopDuration.ToString() : "")),12}");
+                    }
+
+                    if (firstStation) //first station (when it doesn't have an arrival-pair)
+                    {
+                        stationName = stationDictionary[station[i].stationShortCode].stationName;
+                        shortStationArrivalTime = station[i].scheduledTime.ToLocalTime().ToString("HH:mm");
+                        firstStation = false;
+                        Console.WriteLine($"{stationName,15}{shortStationArrivalTime,12}{(stationStopDuration > 0 ? stationStopDuration.ToString() : ""),12}");
+                    }
                 }
             }
         }
 
+
+        //returns the train number that user provided, removes possible non-numbers
+        private static int GetTrainNumber()
+        {
+            //parsing the input train number
+            int trainNum = 0;
+            bool format = false;
+            while (!format)
+            {
+                Console.WriteLine("Enter a train number:");
+                try
+                {
+                    string tempTrainNum = Console.ReadLine().Trim();
+                    string numberOnly = Regex.Replace(tempTrainNum, "[^0-9.]", "");
+                    trainNum = int.Parse(numberOnly);
+
+                    format = true;
+                }
+                catch (FormatException)
+                {
+                    Console.WriteLine("Please enter a valid train number!");
+                }
+            }
+            return trainNum;
+        }
+
+        public static decimal GetTrainDistanceFromStation(Station station)
+        {
+            int trainNum = GetTrainNumber();
+            APIUtil api = new APIUtil();
+            List<TrainLocation> trainLocation = api.TrainLocation(trainNum);
+
+            try
+            {
+                //calculating distance
+                decimal longT = trainLocation[0].location.coordinates[0];
+                decimal latT = trainLocation[0].location.coordinates[1];
+                decimal longS = station.longitude;
+                decimal latS = station.latitude;
+
+                var coordT = new GeoCoordinate((double)latT, (double)longT);
+                var coordS = new GeoCoordinate((double)latS, (double)longS);
+
+                decimal distInMeters = Convert.ToDecimal(coordT.GetDistanceTo(coordS));
+                //return CalculateDistance(longT, latT, longS, latS);
+                decimal distInKm = Math.Round((distInMeters / 1000),1);
+
+                return distInKm;
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Train is currently not operational. Press 'Esc' to exit, otherwise press any key to try again.");
+                ConsoleKeyInfo key = Console.ReadKey();
+                if(key.Key == ConsoleKey.Escape)
+                {
+                    return 0; 
+                }
+                else { return GetTrainDistanceFromStation(station); }
+            }
+        }
 
         public static void SearchBetweenStations(Station from, Station to, int numberToPrint = 5)
         {
