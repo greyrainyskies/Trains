@@ -10,9 +10,15 @@ namespace Trains
     {
         static void Main(string[] args)
         {
+            ConsoleUI.StartMenu();
+
+
+
             Console.WriteLine("Haetaan asemia...");
             SearchLogic.PopulateStationDictionary();
             Console.WriteLine(SearchLogic.ConvertUserInputStationToShortCode("eno"));
+            Console.WriteLine(SearchLogic.ConvertUserInputStationToShortCode("Seinäjoki"));
+            Console.WriteLine(SearchLogic.ConvertUserInputStationToShortCode("Tampere"));
 
 
             var from = new Station();

@@ -35,12 +35,31 @@ namespace Trains
             }
         }
 
+        public static Station ConvertUserInputStringToStation(string input)
+        {
+
+          
+            if (stationDictionary.ContainsKey(input))
+            { 
+                Station userStation = stationDictionary[input];
+                return userStation;
+            }
+
+            else {
+
+                throw new ArgumentException("Not found");
+            }
+           
+        }
+
         public static string ConvertUserInputStationToShortCode(string input)
         {
             Station userStation = stationDictionary[input.ToUpper().Trim()];
             string shortcode = userStation.stationShortCode;
             return shortcode;
         }
+
+
 
 
         //gets trains between two stations specified by the user
@@ -178,12 +197,12 @@ namespace Trains
 
             var trains = api.TrainsBetween(fromShortCode, toShortCode, numberToPrint);
 
-            Console.WriteLine($"Next {trains.Count} " + (trains.Count > 0 ? "trains" : "train" ) + $" between {from.stationName} and {to.stationName}:");
+            Console.WriteLine($"Next {trains.Count} " + (trains.Count > 0 ? "trains" : "train") + $" between {from.stationName} and {to.stationName}:");
 
             foreach (var t in trains)
             {
                 var sb = new StringBuilder();
-                sb.AppendLine(t.trainCategory == "Commuter" ? "Commuter train " + t.commuterLineID : t.trainType + " " + t.trainNumber);
+                sb.AppendLine(TrainName(t));
                 var departure = SearchForTimetableRow(fromShortCode, t.timeTableRows, TimetableRowType.Departure)[0];
                 sb.AppendLine($"\tScheduled departure time from {from.stationName}: {departure.scheduledTime.ToLocalTime()}");
                 if (departure.liveEstimateTime != DateTime.MinValue)
@@ -200,12 +219,255 @@ namespace Trains
             }
         }
 
+        public static List<Train> CurrentStationInfoWithLimit(Station station, int limit = 5)
+        {
+            var api = new APIUtil();
+            var stationShortCode = station.stationShortCode;
+            List<Train> trains = new List<Train>();
+
+            try
+            {
+                trains = api.CurrentStationInfoWithLimit(stationShortCode, limit, limit, limit, limit);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            return trains;
+        }
+
+        public static List<Train> CurrentStationInfoWithTime(Station station, int minutesBeforeDeparture = 15, int minutesAfterDeparture = 15, int minutesBeforeArrival = 15, int minutesAfterArrival = 15)
+        {
+            var api = new APIUtil();
+            var stationShortCode = station.stationShortCode;
+            List<Train> trains = new List<Train>();
+
+            try
+            {
+                trains = api.CurrentStationInfoWithTime(stationShortCode, minutesBeforeDeparture, minutesAfterDeparture, minutesBeforeArrival, minutesAfterArrival);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            return trains;
+        }
+        public static void ShowUpcomingArrivals(Station station, List<Train> trains)
+        {
+            var upcomingArrivalTimes = new List<(Train, TimetableRow)>();
+            var stationShortCode = station.stationShortCode;
+
+            foreach (var t in trains)
+            {
+                var arrival = SearchForTimetableRow(stationShortCode, t.timeTableRows, TimetableRowType.Arrival);
+                if (arrival.Length != 0)
+                {
+                    if (arrival[0].scheduledTime > DateTime.Now.ToUniversalTime() || arrival[0].liveEstimateTime > DateTime.Now.ToUniversalTime())
+                    {
+                        upcomingArrivalTimes.Add((t, arrival[0]));
+                    }
+                }
+            }
+
+            var sortUpcomingArrivals = from tuple in upcomingArrivalTimes
+                                       orderby tuple.Item2.scheduledTime
+                                       select tuple;
+
+            upcomingArrivalTimes = sortUpcomingArrivals.ToList();
+
+            Console.WriteLine($"Current arrivals at {station.stationName}");
+            foreach (var tuple in upcomingArrivalTimes)
+            {
+                var train = tuple.Item1;
+                var sb = new StringBuilder();
+                var arrival = SearchForTimetableRow(stationShortCode, train.timeTableRows, TimetableRowType.Arrival);
+                if (arrival.Length != 0)
+                {
+                    sb.Append(TrainName(train).PadRight(10));
+                    var fromStation = stationDictionary[train.timeTableRows[0].stationShortCode].stationName;
+                    sb.Append(fromStation.PadRight(16));
+                    sb.Append(arrival[0].scheduledTime.ToLocalTime().ToLongTimeString().PadRight(7));
+                    if (arrival[0].liveEstimateTime != DateTime.MinValue && arrival[0].liveEstimateTime != arrival[0].scheduledTime && arrival[0].differenceInMinutes > 0)
+                    {
+                        sb.Append("  =>  ");
+                        sb.Append(arrival[0].liveEstimateTime.ToLocalTime().ToLongTimeString().PadRight(7));
+                        sb.Append(" (");
+                        var difference = arrival[0].differenceInMinutes;
+                        sb.Append(difference < 1 && difference > -1 ? "< 1" : "~ " + Math.Abs(difference).ToString());
+                        sb.Append(Math.Abs(difference) > 1 ? " minutes " : " minute ");
+                        sb.Append(difference >= 0 ? "late)" : "early)");
+                    }
+                    Console.WriteLine(sb.ToString());
+                }
+            }
+        }
+
+        public static void ShowPastArrivals(Station station, List<Train> trains)
+        {
+            var pastArrivalTimes = new List<(Train, TimetableRow)>();
+            var stationShortCode = station.stationShortCode;
+
+            foreach (var t in trains)
+            {
+                var arrival = SearchForTimetableRow(stationShortCode, t.timeTableRows, TimetableRowType.Arrival);
+                if (arrival.Length != 0)
+                {
+                    // Last() instead of [0] ?????
+                    if (arrival.Last().scheduledTime < DateTime.Now.ToUniversalTime() && arrival.Last().liveEstimateTime < DateTime.Now.ToUniversalTime())
+                    {
+                        pastArrivalTimes.Add((t, arrival.Last()));
+                    }
+                }
+            }
+
+            var sortPastArrivals = from tuple in pastArrivalTimes
+                                   orderby tuple.Item2.scheduledTime descending
+                                   select tuple;
+
+            pastArrivalTimes = sortPastArrivals.ToList();
+
+            Console.WriteLine();
+            Console.WriteLine($"Past arrivals at {station.stationName}");
+            foreach (var tuple in pastArrivalTimes)
+            {
+                var train = tuple.Item1;
+                var sb = new StringBuilder();
+                var arrival = SearchForTimetableRow(stationShortCode, train.timeTableRows, TimetableRowType.Arrival);
+                if (arrival.Length != 0)
+                {
+                    sb.Append(TrainName(train).PadRight(10));
+                    var fromStation = stationDictionary[train.timeTableRows[0].stationShortCode].stationName;
+                    sb.Append(fromStation.PadRight(16));
+                    sb.Append(arrival.Last().scheduledTime.ToLocalTime().ToLongTimeString().PadRight(7));
+                    if (arrival.Last().actualTime != DateTime.MinValue && arrival.Last().actualTime != arrival.Last().scheduledTime && arrival.Last().differenceInMinutes > 0)
+                    {
+                        sb.Append("  =>  ");
+                        sb.Append(arrival.Last().actualTime.ToLocalTime().ToLongTimeString().PadRight(7));
+                        sb.Append(" (");
+                        var difference = arrival.Last().differenceInMinutes;
+                        sb.Append(difference < 1 && difference > -1 ? "< 1" : "~ " + Math.Abs(difference).ToString());
+                        sb.Append(Math.Abs(difference) > 1 ? " minutes " : " minute ");
+                        sb.Append(difference >= 0 ? "late)" : "early)");
+                    }
+                    Console.WriteLine(sb.ToString());
+                }
+            }
+        }
+
+        public static void ShowUpcomingDepartures(Station station, List<Train> trains)
+        {
+            var upcomingDepartureTimes = new List<(Train, TimetableRow)>();
+            var stationShortCode = station.stationShortCode;
+
+            foreach (var t in trains)
+            {
+                var departure = SearchForTimetableRow(stationShortCode, t.timeTableRows, TimetableRowType.Departure);
+                if (departure.Length != 0)
+                {
+                    if (departure[0].scheduledTime > DateTime.Now.ToUniversalTime() || departure[0].liveEstimateTime > DateTime.Now)
+                    {
+                        upcomingDepartureTimes.Add((t, departure[0]));
+                    }
+                }
+            }
+
+            var sortUpcomingDepartures = from tuple in upcomingDepartureTimes
+                                         orderby tuple.Item2.scheduledTime
+                                         select tuple;
+
+            upcomingDepartureTimes = sortUpcomingDepartures.ToList();
+
+            Console.WriteLine();
+            Console.WriteLine($"Current departures at {station.stationName}");
+            foreach (var tuple in upcomingDepartureTimes)
+            {
+                var train = tuple.Item1;
+                var sb = new StringBuilder();
+                var departure = SearchForTimetableRow(stationShortCode, train.timeTableRows, TimetableRowType.Departure);
+                if (departure.Length != 0)
+                {
+                    sb.Append(TrainName(train).PadRight(10));
+                    var toStation = stationDictionary[train.timeTableRows[train.timeTableRows.Count - 1].stationShortCode].stationName;
+                    sb.Append(toStation.PadRight(16));
+                    sb.Append(departure[0].scheduledTime.ToLocalTime().ToLongTimeString().PadRight(7));
+                    if (departure[0].liveEstimateTime != DateTime.MinValue && departure[0].liveEstimateTime != departure[0].scheduledTime && departure[0].differenceInMinutes > 0)
+                    {
+                        sb.Append("  =>  ");
+                        sb.Append(departure[0].liveEstimateTime.ToLocalTime().ToLongTimeString().PadRight(7));
+                        sb.Append(" (");
+                        var difference = departure[0].differenceInMinutes;
+                        sb.Append(difference < 1 && difference > -1 ? "< 1" : "~ " + Math.Abs(difference).ToString());
+                        sb.Append(Math.Abs(difference) > 1 ? " minutes " : " minute ");
+                        sb.Append(difference >= 0 ? "late)" : "early)");
+                    }
+                    Console.WriteLine(sb.ToString());
+                }
+            }
+        }
+
+        public static void ShowPastDepartures(Station station, List<Train> trains)
+        {
+            var pastDepartureTimes = new List<(Train, TimetableRow)>();
+            var stationShortCode = station.stationShortCode;
+
+            foreach (var t in trains)
+            {
+                var departure = SearchForTimetableRow(stationShortCode, t.timeTableRows, TimetableRowType.Departure);
+                if (departure.Length != 0)
+                {
+                    if (departure.Last().scheduledTime < DateTime.Now.ToUniversalTime() && departure.Last().liveEstimateTime < DateTime.Now)
+                    {
+                        pastDepartureTimes.Add((t, departure.Last()));
+                    }
+                }
+            }
+
+            var sortPastDepartures = from tuple in pastDepartureTimes
+                                     orderby tuple.Item2.scheduledTime descending
+                                     select tuple;
+
+            pastDepartureTimes = sortPastDepartures.ToList();
+
+            Console.WriteLine();
+            Console.WriteLine($"Past departures at {station.stationName}");
+            foreach (var tuple in pastDepartureTimes)
+            {
+                var train = tuple.Item1;
+                var sb = new StringBuilder();
+                var departure = SearchForTimetableRow(stationShortCode, train.timeTableRows, TimetableRowType.Departure);
+                if (departure.Length != 0)
+                {
+                    sb.Append(TrainName(train).PadRight(10));
+                    var fromStation = stationDictionary[train.timeTableRows[train.timeTableRows.Count - 1].stationShortCode].stationName;
+                    sb.Append(fromStation.PadRight(16));
+                    sb.Append(departure.Last().scheduledTime.ToLocalTime().ToLongTimeString().PadRight(7));
+                    if (departure.Last().actualTime != DateTime.MinValue && departure.Last().actualTime != departure.Last().scheduledTime && departure.Last().differenceInMinutes > 0)
+                    {
+                        sb.Append("  =>  ");
+                        sb.Append(departure.Last().actualTime.ToLocalTime().ToLongTimeString().PadRight(7));
+                        sb.Append(" (");
+                        var difference = departure.Last().differenceInMinutes;
+                        sb.Append(difference < 1 && difference > -1 ? "< 1" : "~ " + Math.Abs(difference).ToString());
+                        sb.Append(Math.Abs(difference) > 1 ? " minutes " : " minute ");
+                        sb.Append(difference >= 0 ? "late)" : "early)");
+                    }
+                    Console.WriteLine(sb.ToString());
+                }
+            }
+        }
         static TimetableRow[] SearchForTimetableRow(string shortCode, List<TimetableRow> rows, TimetableRowType rowType)
         {
             var query = from row in rows
                         where row.stationShortCode == shortCode && row.type == (rowType == TimetableRowType.Arrival ? "ARRIVAL" : "DEPARTURE")
                         select row;
             return query.ToArray();
+        }
+
+        static string TrainName(Train train)
+        {
+            return train.trainCategory == "Commuter" ? train.commuterLineID : train.trainType + " " + train.trainNumber;
         }
     }
 }
