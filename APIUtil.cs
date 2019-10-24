@@ -68,8 +68,6 @@ namespace RataDigiTraffic
             string json = "";
             string url = $"https://rata.digitraffic.fi/api/v1/live-trains/station/{stationShortCode}?arrived_trains={arrivedTrains}&arriving_trains={arrivingTrains}&departed_trains={departedTrains}&departing_trains={departingTrains}&train_categories=Commuter,Long-distance";
 
-            Console.WriteLine(url);
-
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
