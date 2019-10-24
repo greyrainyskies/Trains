@@ -62,10 +62,12 @@ namespace Trains
                         UserInput();
                         break;
                     case ConsoleKey.D2:
-                        SearchLogic.GetTrainRoute();
+                        var trainNumber=SearchLogic.GetTrainNumber();
+                        SearchLogic.GetTrainRoute(trainNumber);
                         break;
                     case ConsoleKey.NumPad2:
-                        SearchLogic.GetTrainRoute();
+                        var trainNumber02 = SearchLogic.GetTrainNumber();
+                        SearchLogic.GetTrainRoute(trainNumber02);
                         break;
                     case ConsoleKey.D3:
                         UserInputStation(); // asemalta matkaa liikkuvaan junaan
@@ -148,7 +150,8 @@ namespace Trains
             try
             {
                 var distfromStation = SearchLogic.ConvertUserInputStringToStation(station);
-                SearchLogic.GetTrainDistanceFromStation(distfromStation);
+                var trainNumber = SearchLogic.GetTrainNumber();
+                SearchLogic.GetTrainDistanceFromStation(distfromStation, trainNumber);
             }
             catch (Exception e)
             {

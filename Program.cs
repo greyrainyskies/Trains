@@ -10,32 +10,16 @@ namespace Trains
     {
         static void Main(string[] args)
         {
+
             ConsoleUI.StartMenu();
             
+              SearchLogic.PopulateStationDictionary();
+            if (args.Length != 0)
+            {
+                CommandLineUI.RunFromCommandLine(args);
+            }
 
 
-            //Console.WriteLine("Haetaan asemia...");
-            //SearchLogic.PopulateStationDictionary();
-            //Console.WriteLine(SearchLogic.ConvertUserInputStationToShortCode("eno"));
-            //Console.WriteLine(SearchLogic.ConvertUserInputStationToShortCode("Seinäjoki"));
-            //Console.WriteLine(SearchLogic.ConvertUserInputStationToShortCode("Tampere"));
-
-
-            //var from = new Station();
-            //from.stationShortCode = "HKI";
-            //from.stationName = "Helsinki";
-            //var to = new Station();
-            //to.stationShortCode = "PSL";
-            //to.stationName = "Pasila";
-            //SearchLogic.SearchBetweenStations(from, to);
-
-            //SearchLogic.GetTrainRoute();
-
-            //Station testiasema = SearchLogic.stationDictionary["JOENSUU"];
-            //Console.WriteLine("testiasema:" + testiasema.stationName);
-            //Console.WriteLine("longitude " + testiasema.longitude);
-            //Console.WriteLine("lat " + testiasema.latitude);
-            //Console.WriteLine("distance from station: d" + SearchLogic.GetTrainDistanceFromStation(testiasema) + "km");//junan etäisyys pasilan asemalta
         }
     }
 }
