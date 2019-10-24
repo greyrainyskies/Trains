@@ -54,7 +54,8 @@ namespace Trains
                     UserInput();
                     break;
                 case ConsoleKey.D2:
-                    SearchLogic.GetTrainRoute();
+                    int trainNum = SearchLogic.GetTrainNumber();
+                    SearchLogic.GetTrainRoute(trainNum);
                     break;
                case ConsoleKey.Escape:
                     repeat = false;

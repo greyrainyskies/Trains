@@ -74,9 +74,9 @@ namespace Trains
         }
 
         //passes an int input (route number) to the api client and then prints the stations with arrival times
-        public static void GetTrainRoute()
+        public static void GetTrainRoute(int trainNum)
         {
-            int trainNum = GetTrainNumber(); //defined under this method
+            //int trainNum = GetTrainNumber(); //now supplied as an argument from the menu
 
             APIUtil api = new APIUtil();
             List<Train> TrainRoute = api.TrainRoute(trainNum);
@@ -130,7 +130,7 @@ namespace Trains
 
 
         //returns the train number that user provided, removes possible non-numbers
-        private static int GetTrainNumber()
+        public static int GetTrainNumber()
         {
             //parsing the input train number
             int trainNum = 0;
@@ -154,9 +154,32 @@ namespace Trains
             return trainNum;
         }
 
-        public static decimal GetTrainDistanceFromStation(Station station)
+        //overload for commandlineparser
+        public static int GetTrainNumber(string tempTrainNum)
         {
-            int trainNum = GetTrainNumber();
+            //parsing the input train number
+            int trainNum = 0;
+            bool format = false;
+            while (!format)
+            {
+                try
+                {
+                    string numberOnly = Regex.Replace(tempTrainNum, "[^0-9.]", "");
+                    trainNum = int.Parse(numberOnly);
+
+                    format = true;
+                }
+                catch (FormatException)
+                {
+                    Console.WriteLine("Please enter a valid train number!");
+                }
+            }
+            return trainNum;
+        }
+
+        public static decimal GetTrainDistanceFromStation(Station station, int trainNum) //remember to add GetTrainNumber() to menu logic to pass the 2nd arg!
+        {
+            //int trainNum = GetTrainNumber();
             APIUtil api = new APIUtil();
             List<TrainLocation> trainLocation = api.TrainLocationLatest(trainNum);
             List<TrainLocation> trainLocationPast = api.TrainLocationPast(trainNum);
@@ -232,8 +255,6 @@ namespace Trains
                 }
 
 
-
-
                 return distInKm;
             }
             catch (Exception)
@@ -244,7 +265,7 @@ namespace Trains
                 {
                     return 0; 
                 }
-                else { return GetTrainDistanceFromStation(station); }
+                else { return GetTrainDistanceFromStation(station, trainNum); }
             }
         }
 
