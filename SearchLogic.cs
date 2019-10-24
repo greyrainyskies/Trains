@@ -405,7 +405,6 @@ namespace Trains
             pastArrivalTimes = sortPastArrivals.ToList();
 
             Console.WriteLine();
-            Console.WriteLine();
             var header = $"Past arrivals at {station.stationName}";
             Console.WriteLine(header);
             Console.WriteLine("".PadLeft(header.Length).Replace(" ", "="));
@@ -472,7 +471,6 @@ namespace Trains
             upcomingDepartureTimes = sortUpcomingDepartures.ToList();
 
             Console.WriteLine();
-            Console.WriteLine();
             var header = $"Upcoming departures from {station.stationName}";
             Console.WriteLine(header);
             Console.WriteLine("".PadLeft(header.Length).Replace(" ", "="));
@@ -538,7 +536,6 @@ namespace Trains
 
             pastDepartureTimes = sortPastDepartures.ToList();
 
-            Console.WriteLine();
             Console.WriteLine();
             var header = $"Past departures from {station.stationName}";
             Console.WriteLine(header);
