@@ -17,7 +17,7 @@ namespace RataDigiTraffic
         {
             string json = "";
             using (var client = new HttpClient())
-            {           
+            {
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 var response = client.GetAsync($"https://rata.digitraffic.fi/api/v1/metadata/stations").Result;
                 var responseString = response.Content.ReadAsStringAsync().Result;
@@ -29,7 +29,7 @@ namespace RataDigiTraffic
         }
 
         public List<Train> TrainsBetween(string from, string to, int limit = 5)
-        {   
+        {
             string json = "";
             //string url = $"https://rata.digitraffic.fi/api/v1/schedules?departure_station={from}&arrival_station={to}";
             // Newer link to the API
@@ -46,9 +46,9 @@ namespace RataDigiTraffic
             }
             try
             {
-            List<Train> res;
-            res = JsonConvert.DeserializeObject<List<Train>>(json);
-            return res;
+                List<Train> res;
+                res = JsonConvert.DeserializeObject<List<Train>>(json);
+                return res;
             }
             catch (Exception e)
             {
@@ -63,7 +63,60 @@ namespace RataDigiTraffic
             }
         }
 
-        public List<TrackingMessage> StationTrains(string paikka )
+        public List<Train> CurrentStationInfoWithLimit(string stationShortCode, int arrivedTrains, int arrivingTrains, int departedTrains, int departingTrains)
+        {
+            string json = "";
+            string url = $"https://rata.digitraffic.fi/api/v1/live-trains/station/{stationShortCode}?arrived_trains={arrivedTrains}&arriving_trains={arrivingTrains}&departed_trains={departedTrains}&departing_trains={departingTrains}&train_categories=Commuter,Long-distance";
+
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var response = client.GetAsync(url).Result;
+                var responseString = response.Content.ReadAsStringAsync().Result;
+                json = responseString;
+            }
+            List<Train> res;
+            if (!string.IsNullOrEmpty(json))
+            {
+                res = JsonConvert.DeserializeObject<List<Train>>(json);
+            }
+            else
+            {
+                throw new ArgumentException("No trains found in the nearby future.");
+            }
+            return res;
+        }
+        public List<Train> CurrentStationInfoWithTime(string stationShortCode, int minutesBeforeDeparture, int minutesAfterDeparture, int minutesBeforeArrival, int minutesAfterArrival)
+        {
+            string json = "";
+            string url = $"https://rata.digitraffic.fi/api/v1/live-trains/station/{stationShortCode}?minutes_before_departure={minutesBeforeDeparture}&minutes_after_departure={minutesAfterDeparture}&minutes_before_arrival={minutesBeforeArrival}&minutes_after_arrival={minutesAfterArrival}&train_categories=Commuter,Long-distance";
+
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var response = client.GetAsync(url).Result;
+                var responseString = response.Content.ReadAsStringAsync().Result;
+                json = responseString;
+            }
+            List<Train> res;
+            if (!string.IsNullOrEmpty(json))
+            {
+                res = JsonConvert.DeserializeObject<List<Train>>(json);
+            }
+            else
+            {
+                throw new ArgumentException("No trains found in the nearby future.");
+            }
+            return res;
+        }
+
+        //public List<Train> NextStationInfo(string stationShortCode)
+        //{
+        //    string json = "";
+        //    string url = $"https://rata.digitraffic.fi/api/v1/";
+        //}
+
+        public List<TrackingMessage> StationTrains(string paikka)
         {
             string json = "";
             string url = $"https://rata.digitraffic.fi/api/v1/train-tracking?station={paikka}&departure_date={DateTime.Today.ToString("yyyy-MM-dd")}";
