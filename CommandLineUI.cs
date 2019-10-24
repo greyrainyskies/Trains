@@ -20,16 +20,23 @@ namespace Trains
 
         static int RunBetweenStations(BetweenOptions opts)
         {
-            var fromStation = SearchLogic.ConvertUserInputStringToStation(opts.FromStation);
-            var toStation = SearchLogic.ConvertUserInputStringToStation(opts.ToStation);
-            var limit = opts.Limit;
-            if (limit != 0)
+            try
             {
-                SearchLogic.SearchBetweenStations(fromStation, toStation, limit);
+                var fromStation = SearchLogic.ConvertUserInputStringToStation(opts.FromStation);
+                var toStation = SearchLogic.ConvertUserInputStringToStation(opts.ToStation);
+                var limit = opts.Limit;
+                if (limit != 0)
+                {
+                    SearchLogic.SearchBetweenStations(fromStation, toStation, limit);
+                }
+                else
+                {
+                    SearchLogic.SearchBetweenStations(fromStation, toStation);
+                }
             }
-            else
+            catch (Exception e)
             {
-                SearchLogic.SearchBetweenStations(fromStation, toStation);
+                Console.WriteLine(e.Message);
             }
 
             return 1;
@@ -37,35 +44,49 @@ namespace Trains
 
         static int RunCurrentStationInfo(CurrentStationInfoOptions opts)
         {
-            var station = SearchLogic.ConvertUserInputStringToStation(opts.Station);
-            var limit = opts.Limit;
-            var trains = new List<Train>();
-            if (limit != 0)
+            try
             {
-                trains = SearchLogic.CurrentStationInfoWithLimit(station, limit);
+                var station = SearchLogic.ConvertUserInputStringToStation(opts.Station);
+                var limit = opts.Limit;
+                var trains = new List<Train>();
+                if (limit != 0)
+                {
+                    trains = SearchLogic.CurrentStationInfoWithLimit(station, limit);
+                }
+                else
+                {
+                    trains = SearchLogic.CurrentStationInfoWithLimit(station);
+                }
+                ShowStationData(station, trains, opts.showPast);
             }
-            else
+            catch (Exception e)
             {
-                trains = SearchLogic.CurrentStationInfoWithLimit(station);
+                Console.WriteLine(e.Message);
             }
-            ShowStationData(station, trains, opts.showPast);
             return 1;
         }
 
         static int RunNextStationInfo(NextStationInfoOptions opts)
         {
-            var station = SearchLogic.ConvertUserInputStringToStation(opts.Station);
-            var minutes = opts.Minutes;
-            var trains = new List<Train>();
-            if (minutes != 0)
+            try
             {
-                trains = SearchLogic.CurrentStationInfoWithTime(station, minutes, minutes, minutes, minutes);
+                var station = SearchLogic.ConvertUserInputStringToStation(opts.Station);
+                var minutes = opts.Minutes;
+                var trains = new List<Train>();
+                if (minutes != 0)
+                {
+                    trains = SearchLogic.CurrentStationInfoWithTime(station, minutes, minutes, minutes, minutes);
+                }
+                else
+                {
+                    trains = SearchLogic.CurrentStationInfoWithTime(station);
+                }
+                ShowStationData(station, trains, opts.showPast);
             }
-            else
+            catch (Exception e)
             {
-                trains = SearchLogic.CurrentStationInfoWithTime(station);
+                Console.WriteLine(e.Message);
             }
-            ShowStationData(station, trains, opts.showPast);
             return 1;
         }
 
