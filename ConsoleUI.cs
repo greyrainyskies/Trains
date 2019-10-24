@@ -11,7 +11,12 @@ namespace Trains
         public static void StartMenu()
         {
 
-            Console.Title = "UI";
+            bool repeat = true;
+
+            while (repeat)
+            {
+
+                Console.Title = "UI";
             string title = @"
 +-----------------------------------------------------+
 |                                                     |
@@ -41,9 +46,7 @@ namespace Trains
             ConsoleKeyInfo switchKey = Console.ReadKey();
             Console.Clear();
 
-            bool repeat = true;
-
-            while (repeat == true) { 
+            
 
             switch (switchKey.Key)
             {
@@ -61,6 +64,9 @@ namespace Trains
                     throw new ArgumentException("Unhandled value: " + switchKey.ToString());
 
             }
+                Console.WriteLine("Press ESC to go back to main menu");
+                Console.ReadKey();
+                Console.Clear();
 
             }
 
@@ -107,8 +113,7 @@ namespace Trains
 
             Console.WriteLine("");
 
-            Console.WriteLine("Press any key to ");
-            Console.ReadKey();
+            
 
 
 
