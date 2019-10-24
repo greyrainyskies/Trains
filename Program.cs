@@ -31,11 +31,12 @@ namespace Trains
 
             SearchLogic.GetTrainRoute();
 
-            Station testiasema = SearchLogic.stationDictionary["JOENSUU"];
+            Station testiasema = SearchLogic.stationDictionary["LAPPEENRANTA"];
             Console.WriteLine("testiasema:" + testiasema.stationName);
             Console.WriteLine("longitude " + testiasema.longitude);
             Console.WriteLine("lat " + testiasema.latitude);
-            Console.WriteLine("distance from station: d" + SearchLogic.GetTrainDistanceFromStation(testiasema)+"km");//junan etäisyys pasilan asemalta
+            Console.WriteLine("paluuarvo dist");
+            SearchLogic.GetTrainDistanceFromStation(testiasema);//junan etäisyys pasilan asemalta
         }
     }
 }

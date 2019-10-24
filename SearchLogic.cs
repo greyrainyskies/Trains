@@ -158,22 +158,81 @@ namespace Trains
         {
             int trainNum = GetTrainNumber();
             APIUtil api = new APIUtil();
-            List<TrainLocation> trainLocation = api.TrainLocation(trainNum);
+            List<TrainLocation> trainLocation = api.TrainLocationLatest(trainNum);
+            List<TrainLocation> trainLocationPast = api.TrainLocationPast(trainNum);
+
 
             try
             {
-                //calculating distance
+                //calculating distance: current location
                 decimal longT = trainLocation[0].location.coordinates[0];
                 decimal latT = trainLocation[0].location.coordinates[1];
                 decimal longS = station.longitude;
                 decimal latS = station.latitude;
 
+                //past location: 15s before the current location
+                decimal longP = trainLocationPast[10].location.coordinates[0];
+                decimal latP = trainLocationPast[10].location.coordinates[1];
+
                 var coordT = new GeoCoordinate((double)latT, (double)longT);
                 var coordS = new GeoCoordinate((double)latS, (double)longS);
+                var coordP = new GeoCoordinate((double)latP, (double)longP);
+
 
                 decimal distInMeters = Convert.ToDecimal(coordT.GetDistanceTo(coordS));
-                //return CalculateDistance(longT, latT, longS, latS);
                 decimal distInKm = Math.Round((distInMeters / 1000),1);
+
+                decimal pastDistInMeters = Convert.ToDecimal(coordP.GetDistanceTo(coordS));
+                decimal pastDistInKm = Math.Round((pastDistInMeters / 1000), 1);
+                
+                //Console.WriteLine("past long " + longP + " past lat " + latP);
+                //Console.WriteLine("past dist: " + pastDistInKm);
+
+
+                //this loop ensures the user's station is on the train's route
+                List<Train> trainRoute = api.TrainRoute(trainNum);
+                bool stationIsOnRoute = false;
+                int userStationIndex = 0;
+                foreach (var s in trainRoute[0].timeTableRows)
+                {
+                    if (s.stationShortCode == station.stationShortCode)
+                    {
+                        if (s.trainStopping)
+                        {
+                            stationIsOnRoute = true;
+                            userStationIndex = trainRoute[0].timeTableRows.IndexOf(s);
+                        }
+                        break;
+                    }
+                }
+
+                bool stoppedAlready = (trainRoute[0].timeTableRows[userStationIndex].scheduledTime > DateTime.Today) && (trainRoute[0].timeTableRows[userStationIndex].actualTime != null ? trainRoute[0].timeTableRows[userStationIndex].actualTime > DateTime.Today : true);
+                if (stationIsOnRoute && !stoppedAlready)
+                {
+                    Console.WriteLine($"distance from {station.stationName} station: " + distInKm + "km");//junan etäisyys pasilan asemalta
+
+                    if (distInMeters < pastDistInMeters) 
+                    {
+                        Console.WriteLine("The train is approaching your station.");
+                    }
+                    if (distInMeters > pastDistInMeters)
+                    {
+                        Console.WriteLine("The train is going further from your station.");
+                    }
+                }
+
+                if(!stationIsOnRoute)
+                {
+                    Console.WriteLine("The train is not stopping at your station.");
+                }
+
+                if (stationIsOnRoute && stoppedAlready)
+                {
+                    Console.WriteLine("The train has already passed your station.");
+                }
+
+
+
 
                 return distInKm;
             }
