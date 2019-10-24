@@ -10,7 +10,6 @@ namespace Trains
     {
         static void Main(string[] args)
         {
-<<<<<<< HEAD
 
             //ConsoleUI ui = new ConsoleUI();
 
@@ -38,7 +37,6 @@ namespace Trains
             //SearchLogic.SearchBetweenStations(from, to);
             //SearchLogic.GetTrainRoute();
 
-=======
             Console.WriteLine("Haetaan asemia...");
             SearchLogic.PopulateStationDictionary();
             Console.WriteLine(SearchLogic.ConvertUserInputStationToShortCode("eno"));
@@ -68,7 +66,6 @@ namespace Trains
             SearchLogic.ShowPastArrivals(stat, trainList2);
             SearchLogic.ShowUpcomingDepartures(stat, trainList2);
             SearchLogic.ShowPastDepartures(stat, trainList2);
->>>>>>> ville
         }
     }
 }
