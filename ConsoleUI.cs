@@ -15,11 +15,11 @@ namespace Trains
 
             while (repeat)
             {
-
+                Console.WriteLine("");
                 Console.Title = "UI";
-            string title = @"
-+-----------------------------------------------------+
-|                                                     |
+                string title = @"
+
+                                                   
 |        ▀▄▀▄▀▄▀▄▀▄▀▄ TrainSearch ▄▀▄▀▄▀▄▀▄▀▄▀        |
 |                                                     |
 +-----------------------------------------------------+
@@ -28,9 +28,9 @@ namespace Trains
 |                                                     |
 |    1. Search trains between start & end stations    |
 |                                                     |
-|    2. Information from specific train               |
+|    2. Information from specific train route         |
 |                                                     |
-|    3. More Something                                |
+|    3. Show train distance from specific station     |
 |                                                     |
 |    4. Still more to come                            |
 |                                                     |
@@ -42,28 +42,41 @@ namespace Trains
 ";
 
 
-            Console.WriteLine(title);
-            ConsoleKeyInfo switchKey = Console.ReadKey();
-            Console.Clear();
+                Console.WriteLine(title);
+                ConsoleKeyInfo switchKey = Console.ReadKey();
+                Console.Clear();
 
-            
 
-            switch (switchKey.Key)
-            {
-                case ConsoleKey.D1:
-                    UserInput();
-                    break;
-                case ConsoleKey.D2:
-                    SearchLogic.GetTrainRoute();
-                    break;
-               case ConsoleKey.Escape:
-                    repeat = false;
-                    break;
+
+                switch (switchKey.Key)
+                {
+                    case ConsoleKey.D1:
+                        UserInput();
+                        break;
+                    case ConsoleKey.NumPad1:
+                        UserInput();
+                        break;
+                    case ConsoleKey.D2:
+                        SearchLogic.GetTrainRoute();
+                        break;
+                    case ConsoleKey.NumPad2:
+                        SearchLogic.GetTrainRoute();
+                        break;
+                    case ConsoleKey.D3:
+                        UserInputStation();
+                        break;
+                    case ConsoleKey.NumPad3:
+                        UserInputStation();
+                        break;
+                    case ConsoleKey.Escape:
+                        Environment.Exit(0);
+                        // repeat = false;
+                        break;
 
                     default:
-                    throw new ArgumentException("Unhandled value: " + switchKey.ToString());
+                        throw new ArgumentException("Unhandled value: " + switchKey.ToString());
 
-            }
+                }
                 Console.WriteLine("Press ESC to go back to main menu");
                 Console.ReadKey();
                 Console.Clear();
@@ -89,9 +102,6 @@ namespace Trains
 
             Console.WriteLine("");
 
-
-
-
             try
             {
                 var fromStation = SearchLogic.ConvertUserInputStringToStation(from);
@@ -113,12 +123,40 @@ namespace Trains
 
             Console.WriteLine("");
 
-            
+        }
+
+        public static void UserInputStation()
+        {
+            SearchLogic.PopulateStationDictionary();
+            Console.WriteLine("Welcome to TrainSearch!");
+            Console.WriteLine("");
+
+            Console.Write("Select station:");
+
+            string station = Console.ReadLine().ToUpper().Trim();
+
+            try
+            {
+                var fromStation = SearchLogic.ConvertUserInputStringToStation(station);
+                SearchLogic.GetTrainDistanceFromStation(fromStation);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            if (SearchLogic.stationDictionary.ContainsKey(station))
+
+            {
+                //Console.WriteLine(SearchLogic.GetTrainDistanceFromStation(station);
+            }
+
+
+            Console.WriteLine("");
+
 
 
 
         }
-
-
     }
 }

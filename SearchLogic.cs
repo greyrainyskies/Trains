@@ -185,7 +185,7 @@ namespace Trains
                 {
                     return 0; 
                 }
-                else { return GetTrainDistanceFromStation(station); }
+                else { return GetTrainDistanceFromStation(station);}
             }
         }
 
