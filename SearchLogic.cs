@@ -171,8 +171,8 @@ namespace Trains
                 }
                 catch (FormatException)
                 {
-
-                    Console.WriteLine("Please enter a valid train 000000number!");
+                    Console.WriteLine("Please enter a valid train number!");
+                    throw new FormatException();
                 }
                 format = true;
             }
@@ -261,13 +261,16 @@ namespace Trains
             }
             catch (Exception)
             {
-                Console.WriteLine("Train is currently not operational. Press 'Esc' to exit, otherwise press any key to try again.");
-                ConsoleKeyInfo key = Console.ReadKey();
-                if(key.Key == ConsoleKey.Escape)
-                {
-                    return 0; 
-                }
-                else { return GetTrainDistanceFromStation(station, trainNum); }
+                Console.WriteLine("Train is currently not operational. Try Again with another train number.");
+                return -1;
+                ////move below to consoleUI logic!
+                //Console.WriteLine("Train is currently not operational. Press 'Esc' to exit, otherwise press any key to try again.");
+                //ConsoleKeyInfo key = Console.ReadKey();
+                //if(key.Key == ConsoleKey.Escape)
+                //{
+                //    return 0; 
+                //}
+                //else { return GetTrainDistanceFromStation(station, trainNum); }
             }
         }
 

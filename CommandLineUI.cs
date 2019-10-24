@@ -28,16 +28,34 @@ namespace Trains
 
         static int RunTrainRoute(RouteOptions opts)
         {
-            var trainNum = SearchLogic.GetTrainNumber(opts.TrainNumber);
-            SearchLogic.GetTrainRoute(trainNum);
-            return 1;
+            try
+            {
+                var trainNum = SearchLogic.GetTrainNumber(opts.TrainNumber);
+                SearchLogic.GetTrainRoute(trainNum);
+                return 1;
+            }
+            catch (FormatException)
+            {
+                return 1;
+            }
         }
 
         static int RunTrainDistance(DistanceOptions opts)
         {
-            var trainNum = SearchLogic.GetTrainNumber(opts.TrainNumber);
-            var station = SearchLogic.ConvertUserInputStringToStation(opts.Station);
-            SearchLogic.GetTrainDistanceFromStation(station, trainNum);
+            try
+            {
+                var trainNum = SearchLogic.GetTrainNumber(opts.TrainNumber);
+                var station = SearchLogic.ConvertUserInputStringToStation(opts.Station);
+                SearchLogic.GetTrainDistanceFromStation(station, trainNum);
+            }
+            catch(ArgumentException)
+            {
+                Console.WriteLine("Station is not valid. Please try again.");
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Train number is not valid. Please try again.");
+            }
             return 1;
         }
     }
@@ -64,7 +82,7 @@ namespace Trains
     [Verb("distance", HelpText = "Get the distance of a train from your station if the station is on the train's route and the train has not yet passed the station.")]
     class DistanceOptions
     {
-        [Option('s', "station", Required = true, HelpText = "Station.")]
+        [Option('s', "station", Required = true, HelpText = "Station. May be in the form 'Helsinki' or 'HKI'.")]
         public string Station { get; set; }
 
         [Option('n', "train-number", Required = true, HelpText = "The number of the train. May be in the form 'IC47' or '47'.")]
