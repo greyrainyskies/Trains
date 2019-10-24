@@ -11,7 +11,7 @@ namespace Trains
         static void Main(string[] args)
         {
             //ConsoleUI ui = new ConsoleUI();
-            ConsoleUI.StartMenu();
+            //ConsoleUI.StartMenu();
 
 
 
@@ -51,25 +51,30 @@ namespace Trains
             //SearchLogic.SearchBetweenStations(from, to);
             //SearchLogic.GetTrainRoute();
             //SearchLogic.CurrentStationInfo(to);
-            var trainList = SearchLogic.CurrentStationInfoWithLimit(to);
+            var trainList = SearchLogic.CurrentStationInfoWithTime(to);
             SearchLogic.ShowUpcomingArrivals(to, trainList);
             SearchLogic.ShowPastArrivals(to, trainList);
             SearchLogic.ShowUpcomingDepartures(to, trainList);
             SearchLogic.ShowPastDepartures(to, trainList);
-            var trainList2 = SearchLogic.CurrentStationInfoWithLimit(stat);
+            var trainList2 = SearchLogic.CurrentStationInfoWithTime(stat);
             SearchLogic.ShowUpcomingArrivals(stat, trainList2);
             SearchLogic.ShowPastArrivals(stat, trainList2);
             SearchLogic.ShowUpcomingDepartures(stat, trainList2);
             SearchLogic.ShowPastDepartures(stat, trainList2);
-            SearchLogic.SearchBetweenStations(from, to);
+            var trainList3 = SearchLogic.CurrentStationInfoWithTime(from);
+            SearchLogic.ShowUpcomingArrivals(from, trainList3);
+            SearchLogic.ShowPastArrivals(from, trainList3);
+            SearchLogic.ShowUpcomingDepartures(from, trainList3);
+            SearchLogic.ShowPastDepartures(from, trainList3);
+            // SearchLogic.SearchBetweenStations(from, to);
 
-            SearchLogic.GetTrainRoute();
+            //SearchLogic.GetTrainRoute();
 
-            Station testiasema = SearchLogic.stationDictionary["JOENSUU"];
-            Console.WriteLine("testiasema:" + testiasema.stationName);
-            Console.WriteLine("longitude " + testiasema.longitude);
-            Console.WriteLine("lat " + testiasema.latitude);
-            Console.WriteLine("distance from station: d" + SearchLogic.GetTrainDistanceFromStation(testiasema)+"km"); //junan etäisyys pasilan asemalta
+            //Station testiasema = SearchLogic.stationDictionary["JOENSUU"];
+            //Console.WriteLine("testiasema:" + testiasema.stationName);
+            //Console.WriteLine("longitude " + testiasema.longitude);
+            //Console.WriteLine("lat " + testiasema.latitude);
+            //Console.WriteLine("distance from station: d" + SearchLogic.GetTrainDistanceFromStation(testiasema)+"km"); //junan etäisyys pasilan asemalta
         }
     }
 }
