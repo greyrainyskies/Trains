@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Trains": {
+      "commandName": "Project",
+      "commandLineArgs": "between -f \"Oulu\" -t \"Ruukki\""
+    }
+  }
+}

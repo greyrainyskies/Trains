@@ -39,9 +39,9 @@ namespace Trains
         {
 
           
-            if (stationDictionary.ContainsKey(input))
+            if (stationDictionary.ContainsKey(input.Trim().ToUpper()))
             { 
-                Station userStation = stationDictionary[input];
+                Station userStation = stationDictionary[input.Trim().ToUpper()];
                 return userStation;
             }
 
