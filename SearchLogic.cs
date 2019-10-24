@@ -158,22 +158,81 @@ namespace Trains
         {
             int trainNum = GetTrainNumber();
             APIUtil api = new APIUtil();
-            List<TrainLocation> trainLocation = api.TrainLocation(trainNum);
+            List<TrainLocation> trainLocation = api.TrainLocationLatest(trainNum);
+            List<TrainLocation> trainLocationPast = api.TrainLocationPast(trainNum);
+
 
             try
             {
-                //calculating distance
+                //calculating distance: current location
                 decimal longT = trainLocation[0].location.coordinates[0];
                 decimal latT = trainLocation[0].location.coordinates[1];
                 decimal longS = station.longitude;
                 decimal latS = station.latitude;
 
+                //past location: 15s before the current location
+                decimal longP = trainLocationPast[10].location.coordinates[0];
+                decimal latP = trainLocationPast[10].location.coordinates[1];
+
                 var coordT = new GeoCoordinate((double)latT, (double)longT);
                 var coordS = new GeoCoordinate((double)latS, (double)longS);
+                var coordP = new GeoCoordinate((double)latP, (double)longP);
+
 
                 decimal distInMeters = Convert.ToDecimal(coordT.GetDistanceTo(coordS));
-                //return CalculateDistance(longT, latT, longS, latS);
                 decimal distInKm = Math.Round((distInMeters / 1000),1);
+
+                decimal pastDistInMeters = Convert.ToDecimal(coordP.GetDistanceTo(coordS));
+                decimal pastDistInKm = Math.Round((pastDistInMeters / 1000), 1);
+                
+                //Console.WriteLine("past long " + longP + " past lat " + latP);
+                //Console.WriteLine("past dist: " + pastDistInKm);
+
+
+                //this loop ensures the user's station is on the train's route
+                List<Train> trainRoute = api.TrainRoute(trainNum);
+                bool stationIsOnRoute = false;
+                int userStationIndex = 0;
+                foreach (var s in trainRoute[0].timeTableRows)
+                {
+                    if (s.stationShortCode == station.stationShortCode)
+                    {
+                        if (s.trainStopping)
+                        {
+                            stationIsOnRoute = true;
+                            userStationIndex = trainRoute[0].timeTableRows.IndexOf(s);
+                        }
+                        break;
+                    }
+                }
+
+                bool stoppedAlready = (trainRoute[0].timeTableRows[userStationIndex].scheduledTime > DateTime.Today) && (trainRoute[0].timeTableRows[userStationIndex].actualTime != null ? trainRoute[0].timeTableRows[userStationIndex].actualTime > DateTime.Today : true);
+                if (stationIsOnRoute && !stoppedAlready)
+                {
+                    Console.WriteLine($"distance from {station.stationName} station: " + distInKm + "km");//junan etäisyys pasilan asemalta
+
+                    if (distInMeters < pastDistInMeters) 
+                    {
+                        Console.WriteLine("The train is approaching your station.");
+                    }
+                    if (distInMeters > pastDistInMeters)
+                    {
+                        Console.WriteLine("The train is going further from your station.");
+                    }
+                }
+
+                if(!stationIsOnRoute)
+                {
+                    Console.WriteLine("The train is not stopping at your station.");
+                }
+
+                if (stationIsOnRoute && stoppedAlready)
+                {
+                    Console.WriteLine("The train has already passed your station.");
+                }
+
+
+
 
                 return distInKm;
             }
@@ -264,7 +323,7 @@ namespace Trains
                 var arrival = SearchForTimetableRow(stationShortCode, t.timeTableRows, TimetableRowType.Arrival);
                 if (arrival.Length != 0)
                 {
-                    if (arrival[0].scheduledTime > DateTime.Now.ToUniversalTime() || arrival[0].liveEstimateTime > DateTime.Now.ToUniversalTime())
+                    if (arrival[0].scheduledTime > DateTime.Now.ToUniversalTime().AddMinutes(-1) || arrival[0].liveEstimateTime > DateTime.Now.ToUniversalTime().AddMinutes(-1))
                     {
                         upcomingArrivalTimes.Add((t, arrival[0]));
                     }
@@ -277,7 +336,11 @@ namespace Trains
 
             upcomingArrivalTimes = sortUpcomingArrivals.ToList();
 
-            Console.WriteLine($"Current arrivals at {station.stationName}");
+            Console.WriteLine();
+            var header = $"Upcoming arrivals at {station.stationName}";
+            Console.WriteLine(header);
+            Console.WriteLine("".PadLeft(header.Length).Replace(" ", "="));
+            Console.WriteLine("Train:    From:           Time:");
             foreach (var tuple in upcomingArrivalTimes)
             {
                 var train = tuple.Item1;
@@ -289,16 +352,29 @@ namespace Trains
                     var fromStation = stationDictionary[train.timeTableRows[0].stationShortCode].stationName;
                     sb.Append(fromStation.PadRight(16));
                     sb.Append(arrival[0].scheduledTime.ToLocalTime().ToLongTimeString().PadRight(7));
+                    if (arrival[0].scheduledTime.Date != DateTime.Today)
+                    {
+                        sb.Append(" (");
+                        sb.Append(arrival[0].scheduledTime.ToShortDateString());
+                        sb.Append(")");
+                    }
                     if (arrival[0].liveEstimateTime != DateTime.MinValue && arrival[0].liveEstimateTime != arrival[0].scheduledTime && arrival[0].differenceInMinutes > 0)
                     {
                         sb.Append("  =>  ");
                         sb.Append(arrival[0].liveEstimateTime.ToLocalTime().ToLongTimeString().PadRight(7));
-                        sb.Append(" (");
+                        if (arrival[0].liveEstimateTime.Date != DateTime.Today)
+                        {
+                            sb.Append(" (");
+                            sb.Append(arrival[0].liveEstimateTime.ToShortDateString());
+                            sb.Append(")");
+                        }
+                        sb.Append(" ");
                         var difference = arrival[0].differenceInMinutes;
                         sb.Append(difference < 1 && difference > -1 ? "< 1" : "~ " + Math.Abs(difference).ToString());
                         sb.Append(Math.Abs(difference) > 1 ? " minutes " : " minute ");
-                        sb.Append(difference >= 0 ? "late)" : "early)");
+                        sb.Append(difference >= 0 ? "late" : "early");
                     }
+                    
                     Console.WriteLine(sb.ToString());
                 }
             }
@@ -329,7 +405,11 @@ namespace Trains
             pastArrivalTimes = sortPastArrivals.ToList();
 
             Console.WriteLine();
-            Console.WriteLine($"Past arrivals at {station.stationName}");
+            Console.WriteLine();
+            var header = $"Past arrivals at {station.stationName}";
+            Console.WriteLine(header);
+            Console.WriteLine("".PadLeft(header.Length).Replace(" ", "="));
+            Console.WriteLine("Train:    From:           Time:");
             foreach (var tuple in pastArrivalTimes)
             {
                 var train = tuple.Item1;
@@ -341,15 +421,27 @@ namespace Trains
                     var fromStation = stationDictionary[train.timeTableRows[0].stationShortCode].stationName;
                     sb.Append(fromStation.PadRight(16));
                     sb.Append(arrival.Last().scheduledTime.ToLocalTime().ToLongTimeString().PadRight(7));
+                    if (arrival.Last().scheduledTime.Date != DateTime.Today)
+                    {
+                        sb.Append(" (");
+                        sb.Append(arrival.Last().scheduledTime.ToShortDateString());
+                        sb.Append(")");
+                    }
                     if (arrival.Last().actualTime != DateTime.MinValue && arrival.Last().actualTime != arrival.Last().scheduledTime && arrival.Last().differenceInMinutes > 0)
                     {
                         sb.Append("  =>  ");
                         sb.Append(arrival.Last().actualTime.ToLocalTime().ToLongTimeString().PadRight(7));
-                        sb.Append(" (");
+                        if (arrival.Last().actualTime.Date != DateTime.Today)
+                        {
+                            sb.Append(" (");
+                            sb.Append(arrival.Last().actualTime.ToShortDateString());
+                            sb.Append(")");
+                        }
+                        sb.Append(" ");
                         var difference = arrival.Last().differenceInMinutes;
                         sb.Append(difference < 1 && difference > -1 ? "< 1" : "~ " + Math.Abs(difference).ToString());
                         sb.Append(Math.Abs(difference) > 1 ? " minutes " : " minute ");
-                        sb.Append(difference >= 0 ? "late)" : "early)");
+                        sb.Append(difference >= 0 ? "late" : "early");
                     }
                     Console.WriteLine(sb.ToString());
                 }
@@ -380,7 +472,11 @@ namespace Trains
             upcomingDepartureTimes = sortUpcomingDepartures.ToList();
 
             Console.WriteLine();
-            Console.WriteLine($"Current departures at {station.stationName}");
+            Console.WriteLine();
+            var header = $"Upcoming departures from {station.stationName}";
+            Console.WriteLine(header);
+            Console.WriteLine("".PadLeft(header.Length).Replace(" ", "="));
+            Console.WriteLine("Train:    To:             Time:");
             foreach (var tuple in upcomingDepartureTimes)
             {
                 var train = tuple.Item1;
@@ -392,15 +488,27 @@ namespace Trains
                     var toStation = stationDictionary[train.timeTableRows[train.timeTableRows.Count - 1].stationShortCode].stationName;
                     sb.Append(toStation.PadRight(16));
                     sb.Append(departure[0].scheduledTime.ToLocalTime().ToLongTimeString().PadRight(7));
+                    if (departure[0].scheduledTime.Date != DateTime.Today)
+                    {
+                        sb.Append(" (");
+                        sb.Append(departure[0].scheduledTime.ToShortDateString());
+                        sb.Append(")");
+                    }
                     if (departure[0].liveEstimateTime != DateTime.MinValue && departure[0].liveEstimateTime != departure[0].scheduledTime && departure[0].differenceInMinutes > 0)
                     {
                         sb.Append("  =>  ");
                         sb.Append(departure[0].liveEstimateTime.ToLocalTime().ToLongTimeString().PadRight(7));
-                        sb.Append(" (");
+                        if (departure[0].liveEstimateTime.Date != DateTime.Today)
+                        {
+                            sb.Append(" (");
+                            sb.Append(departure[0].liveEstimateTime.ToShortDateString());
+                            sb.Append(")");
+                        }
+                        sb.Append(" ");
                         var difference = departure[0].differenceInMinutes;
                         sb.Append(difference < 1 && difference > -1 ? "< 1" : "~ " + Math.Abs(difference).ToString());
                         sb.Append(Math.Abs(difference) > 1 ? " minutes " : " minute ");
-                        sb.Append(difference >= 0 ? "late)" : "early)");
+                        sb.Append(difference >= 0 ? "late" : "early");
                     }
                     Console.WriteLine(sb.ToString());
                 }
@@ -431,7 +539,11 @@ namespace Trains
             pastDepartureTimes = sortPastDepartures.ToList();
 
             Console.WriteLine();
-            Console.WriteLine($"Past departures at {station.stationName}");
+            Console.WriteLine();
+            var header = $"Past departures from {station.stationName}";
+            Console.WriteLine(header);
+            Console.WriteLine("".PadLeft(header.Length).Replace(" ", "="));
+            Console.WriteLine("Train:    To:             Time:");
             foreach (var tuple in pastDepartureTimes)
             {
                 var train = tuple.Item1;
@@ -443,15 +555,27 @@ namespace Trains
                     var fromStation = stationDictionary[train.timeTableRows[train.timeTableRows.Count - 1].stationShortCode].stationName;
                     sb.Append(fromStation.PadRight(16));
                     sb.Append(departure.Last().scheduledTime.ToLocalTime().ToLongTimeString().PadRight(7));
+                    if (departure.Last().scheduledTime.Date != DateTime.Today)
+                    {
+                        sb.Append(" (");
+                        sb.Append(departure.Last().scheduledTime.ToShortDateString());
+                        sb.Append(")");
+                    }
                     if (departure.Last().actualTime != DateTime.MinValue && departure.Last().actualTime != departure.Last().scheduledTime && departure.Last().differenceInMinutes > 0)
                     {
                         sb.Append("  =>  ");
                         sb.Append(departure.Last().actualTime.ToLocalTime().ToLongTimeString().PadRight(7));
-                        sb.Append(" (");
+                        if (departure.Last().actualTime.Date != DateTime.Today)
+                        {
+                            sb.Append(" (");
+                            sb.Append(departure.Last().actualTime.ToShortDateString());
+                            sb.Append(")");
+                        }
+                        sb.Append(" ");
                         var difference = departure.Last().differenceInMinutes;
                         sb.Append(difference < 1 && difference > -1 ? "< 1" : "~ " + Math.Abs(difference).ToString());
                         sb.Append(Math.Abs(difference) > 1 ? " minutes " : " minute ");
-                        sb.Append(difference >= 0 ? "late)" : "early)");
+                        sb.Append(difference >= 0 ? "late" : "early");
                     }
                     Console.WriteLine(sb.ToString());
                 }
