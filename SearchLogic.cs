@@ -38,18 +38,18 @@ namespace Trains
         public static Station ConvertUserInputStringToStation(string input)
         {
 
-          
+
             if (stationDictionary.ContainsKey(input.Trim().ToUpper()))
-            { 
+            {
                 Station userStation = stationDictionary[input.Trim().ToUpper()];
                 return userStation;
             }
 
-            else {
-
-                throw new ArgumentException("Not found");
+            else
+            {
+                throw new ArgumentException($"{input} is not a valid station. Please try again.");
             }
-           
+
         }
 
         public static string ConvertUserInputStationToShortCode(string input)
@@ -203,11 +203,11 @@ namespace Trains
 
 
                 decimal distInMeters = Convert.ToDecimal(coordT.GetDistanceTo(coordS));
-                decimal distInKm = Math.Round((distInMeters / 1000),1);
+                decimal distInKm = Math.Round((distInMeters / 1000), 1);
 
                 decimal pastDistInMeters = Convert.ToDecimal(coordP.GetDistanceTo(coordS));
                 decimal pastDistInKm = Math.Round((pastDistInMeters / 1000), 1);
-                
+
                 //Console.WriteLine("past long " + longP + " past lat " + latP);
                 //Console.WriteLine("past dist: " + pastDistInKm);
 
@@ -234,7 +234,7 @@ namespace Trains
                 {
                     Console.WriteLine($"distance from {station.stationName} station: " + distInKm + "km");//junan etäisyys pasilan asemalta
 
-                    if (distInMeters < pastDistInMeters) 
+                    if (distInMeters < pastDistInMeters)
                     {
                         Console.WriteLine("The train is approaching your station.");
                     }
@@ -244,7 +244,7 @@ namespace Trains
                     }
                 }
 
-                if(!stationIsOnRoute)
+                if (!stationIsOnRoute)
                 {
                     Console.WriteLine("The train is not stopping at your station.");
                 }
@@ -261,9 +261,9 @@ namespace Trains
             {
                 Console.WriteLine("Train is currently not operational. Press 'Esc' to exit, otherwise press any key to try again.");
                 ConsoleKeyInfo key = Console.ReadKey();
-                if(key.Key == ConsoleKey.Escape)
+                if (key.Key == ConsoleKey.Escape)
                 {
-                    return 0; 
+                    return 0;
                 }
                 else { return GetTrainDistanceFromStation(station, trainNum); }
             }
@@ -395,7 +395,7 @@ namespace Trains
                         sb.Append(Math.Abs(difference) > 1 ? " minutes " : " minute ");
                         sb.Append(difference >= 0 ? "late" : "early");
                     }
-                    
+
                     Console.WriteLine(sb.ToString());
                 }
             }
@@ -425,7 +425,6 @@ namespace Trains
 
             pastArrivalTimes = sortPastArrivals.ToList();
 
-            Console.WriteLine();
             Console.WriteLine();
             var header = $"Past arrivals at {station.stationName}";
             Console.WriteLine(header);
@@ -493,7 +492,6 @@ namespace Trains
             upcomingDepartureTimes = sortUpcomingDepartures.ToList();
 
             Console.WriteLine();
-            Console.WriteLine();
             var header = $"Upcoming departures from {station.stationName}";
             Console.WriteLine(header);
             Console.WriteLine("".PadLeft(header.Length).Replace(" ", "="));
@@ -559,7 +557,6 @@ namespace Trains
 
             pastDepartureTimes = sortPastDepartures.ToList();
 
-            Console.WriteLine();
             Console.WriteLine();
             var header = $"Past departures from {station.stationName}";
             Console.WriteLine(header);
