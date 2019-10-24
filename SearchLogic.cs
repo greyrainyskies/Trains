@@ -141,6 +141,7 @@ namespace Trains
                 try
                 {
                     string tempTrainNum = Console.ReadLine().Trim();
+                    if(tempTrainNum == "exit") { return trainNum; }
                     string numberOnly = Regex.Replace(tempTrainNum, "[^0-9.]", "");
                     trainNum = int.Parse(numberOnly);
 
@@ -148,7 +149,7 @@ namespace Trains
                 }
                 catch (FormatException)
                 {
-                    Console.WriteLine("Please enter a valid train number!");
+                    Console.WriteLine("Please enter a valid train number or type 'exit' to go back to the menu.");
                 }
             }
             return trainNum;
@@ -167,12 +168,13 @@ namespace Trains
                     string numberOnly = Regex.Replace(tempTrainNum, "[^0-9.]", "");
                     trainNum = int.Parse(numberOnly);
 
-                    format = true;
                 }
                 catch (FormatException)
                 {
-                    Console.WriteLine("Please enter a valid train number!");
+
+                    Console.WriteLine("Please enter a valid train 000000number!");
                 }
+                format = true;
             }
             return trainNum;
         }
