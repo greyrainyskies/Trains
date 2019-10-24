@@ -23,8 +23,8 @@ namespace Trains
                 Console.WriteLine("");
                 string title = @"
                 
-+-----------------------------------------------------+
-|                                                     |
+
+++                                                    |
 |        ▀▄▀▄▀▄▀▄▀▄▀▄ TrainSearch ▄▀▄▀▄▀▄▀▄▀▄▀        |
 |                                                     |
 +-----------------------------------------------------+
@@ -33,14 +33,14 @@ namespace Trains
 |                                                     |
 |    1. Search trains between start & end stations    |
 |                                                     |
-|    2. Information from specific train               |
+|    2. Information from specific train route         |
 |                                                     |
-|    3. More Something                                |
+|    3. Get train distance from station               |
 |                                                     |
-|    4. Still more to come                            |
+|    4. Station's next 5 arrivals / departures        |
 |                                                     |
-|                                                     |
-|                                                     |
+|    5. Station's arrivals / departures               |
+|       ïn +- 15min.                                  |
 |                                                     |
 |                                                     |
 +-----------------------------------------------------+
@@ -62,7 +62,7 @@ namespace Trains
                         UserInput();
                         break;
                     case ConsoleKey.D2:
-                        var trainNumber=SearchLogic.GetTrainNumber();
+                        var trainNumber = SearchLogic.GetTrainNumber();
                         SearchLogic.GetTrainRoute(trainNumber);
                         break;
                     case ConsoleKey.NumPad2:
@@ -72,6 +72,22 @@ namespace Trains
                     case ConsoleKey.D3:
                         UserInputStation(); // asemalta matkaa liikkuvaan junaan
                         break;
+                    case ConsoleKey.NumPad3:
+                        UserInputStation();
+                        break;
+                    case ConsoleKey.D4:
+                        UserInputStationInfoWithLimit();
+                        break;
+                    case ConsoleKey.NumPad4:
+                        UserInputStationInfoWithLimit();
+                        break;
+                    case ConsoleKey.D5:
+                        UserInputStationInfoWithTime();
+                        break;
+                    case ConsoleKey.NumPad5:
+                        UserInputStationInfoWithTime();
+                        break;
+
 
                     case ConsoleKey.Escape:
                         Environment.Exit(0);
@@ -107,9 +123,6 @@ namespace Trains
 
             Console.WriteLine("");
 
-
-
-
             try
             {
                 var fromStation = SearchLogic.ConvertUserInputStringToStation(from);
@@ -139,7 +152,7 @@ namespace Trains
 
         public static void UserInputStation()
         {
-            
+
             Console.WriteLine("Welcome to TrainSearch!");
             Console.WriteLine("");
 
@@ -158,16 +171,70 @@ namespace Trains
                 Console.WriteLine(e.Message);
             }
 
-            //if (SearchLogic.stationDictionary.ContainsKey(station))
-
-            //{
-            //    //Console.WriteLine(SearchLogic.GetTrainDistanceFromStation[]);
-            //}
-
 
             Console.WriteLine("");
 
 
         }
-}
+        public static void UserInputStationInfoWithLimit()
+        {
+
+            Console.WriteLine("Welcome to TrainSearch!");
+            Console.WriteLine("");
+
+            Console.Write("Select station:");
+
+            string station = Console.ReadLine().ToUpper().Trim();
+
+            try
+            {
+                var stationLocation = SearchLogic.ConvertUserInputStringToStation(station);
+                var list = SearchLogic.CurrentStationInfoWithLimit(stationLocation);
+                SearchLogic.ShowUpcomingArrivals(stationLocation, list);
+                SearchLogic.ShowPastArrivals(stationLocation, list);
+                SearchLogic.ShowUpcomingDepartures(stationLocation, list);
+                SearchLogic.ShowUpcomingArrivals(stationLocation, list);
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            Console.WriteLine("");
+
+
+
+
+        }
+        public static void UserInputStationInfoWithTime()
+        {
+
+            Console.WriteLine("Welcome to TrainSearch!");
+            Console.WriteLine("");
+
+            Console.Write("Select station:");
+
+            string station = Console.ReadLine().ToUpper().Trim();
+
+            try
+            {
+                var stationLocation = SearchLogic.ConvertUserInputStringToStation(station);
+                var list = SearchLogic.CurrentStationInfoWithTime(stationLocation);
+                SearchLogic.ShowUpcomingArrivals(stationLocation, list);
+                SearchLogic.ShowPastArrivals(stationLocation, list);
+                SearchLogic.ShowUpcomingDepartures(stationLocation, list);
+                SearchLogic.ShowUpcomingArrivals(stationLocation, list);
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            Console.WriteLine("");
+
+
+        }
+    }
 }
