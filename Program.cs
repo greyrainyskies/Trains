@@ -10,16 +10,15 @@ namespace Trains
     {
         static void Main(string[] args)
         {
-
-            ConsoleUI.StartMenu();
-            
-              SearchLogic.PopulateStationDictionary();
+            SearchLogic.PopulateStationDictionary();
             if (args.Length != 0)
             {
                 CommandLineUI.RunFromCommandLine(args);
             }
-
-
+            else
+            {
+                ConsoleUI.StartMenu();
+            }
         }
     }
 }

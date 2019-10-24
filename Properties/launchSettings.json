@@ -1,8 +1,7 @@
 {
   "profiles": {
     "Trains": {
-      "commandName": "Project",
-      "commandLineArgs": "station -s Tikkurila"
+      "commandName": "Project"
     }
   }
 }
