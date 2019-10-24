@@ -11,13 +11,18 @@ namespace Trains
         public static void StartMenu()
         {
 
+            SearchLogic.PopulateStationDictionary();
             bool repeat = true;
 
             while (repeat)
             {
 
+
                 Console.Title = "UI";
-            string title = @"
+                Console.WriteLine("");
+                Console.WriteLine("");
+                string title = @"
+                
 +-----------------------------------------------------+
 |                                                     |
 |        ▀▄▀▄▀▄▀▄▀▄▀▄ TrainSearch ▄▀▄▀▄▀▄▀▄▀▄▀        |
@@ -42,31 +47,42 @@ namespace Trains
 ";
 
 
-            Console.WriteLine(title);
-            ConsoleKeyInfo switchKey = Console.ReadKey();
-            Console.Clear();
+                Console.WriteLine(title);
+                ConsoleKeyInfo switchKey = Console.ReadKey();
+                Console.Clear();
 
-            
 
-            switch (switchKey.Key)
-            {
-                case ConsoleKey.D1:
-                    UserInput();
-                    break;
-                case ConsoleKey.D2:
-                    SearchLogic.GetTrainRoute();
-                    break;
-               case ConsoleKey.Escape:
-                    repeat = false;
-                    break;
+
+                switch (switchKey.Key)
+                {
+                    case ConsoleKey.D1:
+                        UserInput();
+                        break;
+                    case ConsoleKey.NumPad1:
+                        UserInput();
+                        break;
+                    case ConsoleKey.D2:
+                        SearchLogic.GetTrainRoute();
+                        break;
+                    case ConsoleKey.NumPad2:
+                        SearchLogic.GetTrainRoute();
+                        break;
+                    case ConsoleKey.D3:
+                        UserInputStation(); // asemalta matkaa liikkuvaan junaan
+                        break;
+
+                    case ConsoleKey.Escape:
+                        Environment.Exit(0);
+                        break;
 
                     default:
-                    throw new ArgumentException("Unhandled value: " + switchKey.ToString());
+                        throw new ArgumentException("Unhandled value: " + switchKey.ToString());
 
-            }
+                }
                 Console.WriteLine("Press ESC to go back to main menu");
                 Console.ReadKey();
                 Console.Clear();
+
 
             }
 
@@ -75,7 +91,7 @@ namespace Trains
 
         public static void UserInput()
         {
-            SearchLogic.PopulateStationDictionary();
+
             Console.WriteLine("Welcome to TrainSearch!");
             Console.WriteLine("");
 
@@ -113,12 +129,42 @@ namespace Trains
 
             Console.WriteLine("");
 
-            
+
 
 
 
         }
 
+        public static void UserInputStation()
+        {
+            
+            Console.WriteLine("Welcome to TrainSearch!");
+            Console.WriteLine("");
 
-    }
+            Console.Write("Select station:");
+
+            string station = Console.ReadLine().ToUpper().Trim();
+
+            try
+            {
+                var distfromStation = SearchLogic.ConvertUserInputStringToStation(station);
+                SearchLogic.GetTrainDistanceFromStation(distfromStation);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            //if (SearchLogic.stationDictionary.ContainsKey(station))
+
+            //{
+            //    //Console.WriteLine(SearchLogic.GetTrainDistanceFromStation[]);
+            //}
+
+
+            Console.WriteLine("");
+
+
+        }
+}
 }
