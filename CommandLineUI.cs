@@ -148,7 +148,7 @@ namespace Trains
         public bool showPast { get; set; }
     }
 
-    [Verb("route", HelpText = "Get the route for a specific train number.")]
+    [Verb("route", HelpText = "Get the route for a specific train number.")] 
     class RouteOptions
     {
         [Option('n', "train-number", Required = true, HelpText = "The number of the train. May be in the form 'IC47' or '47'.")]
