@@ -137,6 +137,8 @@ namespace Trains
             bool format = false;
             while (!format)
             {
+                Console.WriteLine("Welcome to TrainSearch!");
+                Console.WriteLine("Information from specific train route");
                 Console.WriteLine("Enter a train number:");
                 try
                 {

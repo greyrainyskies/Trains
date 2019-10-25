@@ -36,12 +36,12 @@ namespace Trains
 |                                                     |
 |    3. Get train distance from station               |
 |                                                     |
-|    4. Station's next 5 arrivals / departures        |
+|    4. Station's next arrivals / departures          |
 |                                                     |
 |    5. Station's arrivals / departures               |
-|       ïn +- 15min.                                  |
+|       in +- 15min.                                  |
 |                                                     |
-|    Esc. Close console application                   |
+|   Press Esc. to close console application           |
 |                                                     |
 +-----------------------------------------------------+
 ";
@@ -92,10 +92,11 @@ namespace Trains
                         break;
 
                     default:
-                        throw new ArgumentException("Unhandled value: " + switchKey.ToString());
-
+                        Console.WriteLine("Not a valid option.");
+                        break;
+                        
                 }
-                Console.WriteLine("Press ESC to go back to main menu");
+                Console.WriteLine("Press ESC to go back to main menu.");
                 Console.ReadKey();
                 Console.Clear();
 
@@ -109,6 +110,8 @@ namespace Trains
         {
 
             Console.WriteLine("Welcome to TrainSearch!");
+            Console.WriteLine("Search trains between start & end stations.");
+
             Console.WriteLine("");
 
             Console.Write("from:");
@@ -133,12 +136,6 @@ namespace Trains
                 Console.WriteLine(e.Message);
             }
 
-            if (SearchLogic.stationDictionary.ContainsKey(to))
-
-            {
-                Console.WriteLine(SearchLogic.stationDictionary[to]);
-            }
-
 
             Console.WriteLine("");
 
@@ -152,8 +149,9 @@ namespace Trains
         {
 
             Console.WriteLine("Welcome to TrainSearch!");
+            Console.WriteLine("Get train distance from station");
             Console.WriteLine("");
-
+            
             Console.Write("Select station:");
 
             string station = Console.ReadLine().ToUpper().Trim();
@@ -178,8 +176,10 @@ namespace Trains
         {
 
             Console.WriteLine("Welcome to TrainSearch!");
+            Console.WriteLine("Station's next arrivals / departures");
             Console.WriteLine("");
 
+            
             Console.Write("Select station:");
 
             string station = Console.ReadLine().ToUpper().Trim();
@@ -191,7 +191,7 @@ namespace Trains
                 SearchLogic.ShowUpcomingArrivals(stationLocation, list);
                 SearchLogic.ShowPastArrivals(stationLocation, list);
                 SearchLogic.ShowUpcomingDepartures(stationLocation, list);
-                SearchLogic.ShowUpcomingArrivals(stationLocation, list);
+                SearchLogic.ShowPastDepartures(stationLocation, list);
 
             }
             catch (Exception e)
@@ -209,8 +209,12 @@ namespace Trains
         {
 
             Console.WriteLine("Welcome to TrainSearch!");
+            Console.WriteLine("Station's next arrivals / departures");
+            Console.WriteLine("in +- 15min.");
+
             Console.WriteLine("");
 
+            
             Console.Write("Select station:");
 
             string station = Console.ReadLine().ToUpper().Trim();
@@ -222,7 +226,7 @@ namespace Trains
                 SearchLogic.ShowUpcomingArrivals(stationLocation, list);
                 SearchLogic.ShowPastArrivals(stationLocation, list);
                 SearchLogic.ShowUpcomingDepartures(stationLocation, list);
-                SearchLogic.ShowUpcomingArrivals(stationLocation, list);
+                SearchLogic.ShowPastDepartures(stationLocation, list);
 
             }
             catch (Exception e)
