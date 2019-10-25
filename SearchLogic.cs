@@ -234,7 +234,7 @@ namespace Trains
                 bool stoppedAlready = (trainRoute[0].timeTableRows[userStationIndex].scheduledTime > DateTime.Today) && (trainRoute[0].timeTableRows[userStationIndex].actualTime != null ? trainRoute[0].timeTableRows[userStationIndex].actualTime > DateTime.Today : true);
                 if (stationIsOnRoute && !stoppedAlready)
                 {
-                    Console.WriteLine($"distance from {station.stationName} station: " + distInKm + "km");//junan etäisyys pasilan asemalta
+                    Console.WriteLine($"Distance from {station.stationName} station: " + distInKm + "km");//junan etäisyys pasilan asemalta
 
                     if (distInMeters < pastDistInMeters)
                     {
