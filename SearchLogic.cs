@@ -282,6 +282,7 @@ namespace Trains
 
             var trains = api.TrainsBetween(fromShortCode, toShortCode, numberToPrint);
 
+            Console.WriteLine();
             Console.WriteLine($"Next {trains.Count} " + (trains.Count > 0 ? "trains" : "train") + $" between {from.stationName} and {to.stationName}:");
 
             foreach (var t in trains)

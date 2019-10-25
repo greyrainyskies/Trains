@@ -3,7 +3,6 @@ using RataDigiTraffic;
 using RataDigiTraffic.Model;
 using System.Collections.Generic;
 
-
 namespace Trains
 {
     class Program
