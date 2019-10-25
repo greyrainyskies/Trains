@@ -42,6 +42,7 @@ namespace Trains
 |    5. Station's arrivals / departures               |
 |       ïn +- 15min.                                  |
 |                                                     |
+|    Esc. Close console application                   |
 |                                                     |
 +-----------------------------------------------------+
 ";
@@ -56,39 +57,37 @@ namespace Trains
                 switch (switchKey.Key)
                 {
                     case ConsoleKey.D1:
-                        UserInput();
+                        UserInput(); // trains between stations
                         break;
                     case ConsoleKey.NumPad1:
-                        UserInput();
+                        UserInput();  // trains between stations
                         break;
                     case ConsoleKey.D2:
-                        var trainNumber = SearchLogic.GetTrainNumber();
+                        var trainNumber = SearchLogic.GetTrainNumber(); // train route via train number
                         SearchLogic.GetTrainRoute(trainNumber);
                         break;
                     case ConsoleKey.NumPad2:
-                        var trainNumber02 = SearchLogic.GetTrainNumber();
+                        var trainNumber02 = SearchLogic.GetTrainNumber(); // train route via train number
                         SearchLogic.GetTrainRoute(trainNumber02);
                         break;
                     case ConsoleKey.D3:
-                        UserInputStation(); // asemalta matkaa liikkuvaan junaan
+                        UserInputStation(); // distance from station to train
                         break;
                     case ConsoleKey.NumPad3:
-                        UserInputStation();
+                        UserInputStation(); // distance from station to train
                         break;
                     case ConsoleKey.D4:
-                        UserInputStationInfoWithLimit();
+                        UserInputStationInfoWithLimit(); // station info with 5 trains
                         break;
                     case ConsoleKey.NumPad4:
-                        UserInputStationInfoWithLimit();
+                        UserInputStationInfoWithLimit(); // station info with 5 trains
                         break;
                     case ConsoleKey.D5:
-                        UserInputStationInfoWithTime();
+                        UserInputStationInfoWithTime(); // station info with +- 15min time window
                         break;
                     case ConsoleKey.NumPad5:
-                        UserInputStationInfoWithTime();
+                        UserInputStationInfoWithTime(); // station info with +- 15min time window
                         break;
-
-
                     case ConsoleKey.Escape:
                         Environment.Exit(0);
                         break;
