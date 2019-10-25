@@ -234,7 +234,7 @@ namespace Trains
                 bool stoppedAlready = (trainRoute[0].timeTableRows[userStationIndex].scheduledTime > DateTime.Today) && (trainRoute[0].timeTableRows[userStationIndex].actualTime != null ? trainRoute[0].timeTableRows[userStationIndex].actualTime > DateTime.Today : true);
                 if (stationIsOnRoute && !stoppedAlready)
                 {
-                    Console.WriteLine($"distance from {station.stationName} station: " + distInKm + "km");//junan etäisyys pasilan asemalta
+                    Console.WriteLine($"Distance from {station.stationName} station: " + distInKm + "km");//junan etäisyys pasilan asemalta
 
                     if (distInMeters < pastDistInMeters)
                     {
@@ -282,6 +282,7 @@ namespace Trains
 
             var trains = api.TrainsBetween(fromShortCode, toShortCode, numberToPrint);
 
+            Console.WriteLine();
             Console.WriteLine($"Next {trains.Count} " + (trains.Count > 0 ? "trains" : "train") + $" between {from.stationName} and {to.stationName}:");
 
             foreach (var t in trains)

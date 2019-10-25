@@ -3,6 +3,9 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
+    <Product />
+    <Authors />
+    <PackageId>Trains</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

@@ -11,7 +11,6 @@ namespace Trains
         public static void StartMenu()
         {
 
-            SearchLogic.PopulateStationDictionary();
             bool repeat = true;
 
             while (repeat)

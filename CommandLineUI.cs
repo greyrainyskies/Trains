@@ -140,23 +140,26 @@ namespace Trains
         }
     }
 
-    [Verb("between", HelpText = "Search for train connections between two stations.")]
+    [Verb("between", HelpText = "Search for train connections between two stations. Syntax: \"between <FROM STATION> <TO STATION>\"")]
     class BetweenOptions
     {
-        [Option('f', "from", Required = true, HelpText = "The station from which trains are searched.")]
+        [Value(0, MetaName = "From", HelpText = "The name or shortcode of station.", Required = true)]
+        //[Option('f', "from", Required = true, HelpText = "The station from which trains are searched.")]
         public string FromStation { get; set; }
 
-        [Option('t', "to", Required = true, HelpText = "The station to which trains are searched.")]
+        [Value(1, MetaName = "To", HelpText = "The name or shortcode of station.", Required = true)]
+        //[Option('t', "to", Required = true, HelpText = "The station to which trains are searched.")]
         public string ToStation { get; set; }
 
         [Option('l', "limit", Required = false, HelpText = "Parameter to limit the number of results. Default is 5.")]
         public int Limit { get; set; }
     }
 
-    [Verb("station", HelpText = "Show current info at a specific station.")]
+    [Verb("station", HelpText = "Show current info at a specific station. Syntax: \"station <STATION NAME>\"")]
     class CurrentStationInfoOptions
     {
-        [Option('s', "station", Required = true, HelpText = "Name of the station whose information is shown.")]
+        // [Option('s', "station", Required = true, HelpText = "Name of the station whose information is shown.")]
+        [Value(0, MetaName = "Station name", HelpText = "The name or shortcode of station whose information is to be displayed.", Required = true)]
         public string Station { get; set; }
 
         [Option('l', "limit", Required = false, HelpText = "How many results are shown. Default 5.")]
@@ -166,29 +169,33 @@ namespace Trains
         public bool showPast { get; set; }
     }
 
-    [Verb("route", HelpText = "Get the route for a specific train number.")]
+    [Verb("route", HelpText = "Get the route for a specific train number. Syntax: \"route <TRAIN NUMBER>\"")] 
     class RouteOptions
     {
-        [Option('n', "train-number", Required = true, HelpText = "The number of the train. May be in the form 'IC47' or '47'.")]
+        [Value(0, Required = true, MetaName = "Train number", HelpText = "The number of the train. May be in the form 'IC47' or '47'.")]
+        //[Option('n', "train-number", Required = true, HelpText = "The number of the train. May be in the form 'IC47' or '47'.")]
         public string TrainNumber { get; set; }
 
     }
 
-    [Verb("distance", HelpText = "Get the distance of a train from your station if the station is on the train's route and the train has not yet passed the station.")]
+    [Verb("distance", HelpText = "Get the distance of a train from your station if the station is on the train's route and the train has not yet passed the station. Syntax: \"distance <STATION NAME> <TRAIN NUMBER>\"")]
     class DistanceOptions
     {
-        [Option('s', "station", Required = true, HelpText = "Station. May be in the form 'Helsinki' or 'HKI'.")]
+        [Value(0, MetaName = "Station", Required = true, HelpText = "Station where you are at.")]
+        //[Option('s', "station", Required = true, HelpText = "Station.")]
         public string Station { get; set; }
 
-        [Option('n', "train-number", Required = true, HelpText = "The number of the train. May be in the form 'IC47' or '47'.")]
+        [Value(1, MetaName = "Train number", Required = true, HelpText = "The number of the train. May be in the form 'IC47' or '47'.")]
+        //[Option('n', "train-number", Required = true, HelpText = "The number of the train. May be in the form 'IC47' or '47'.")]
         public string TrainNumber { get; set; }
 
     }
 
-    [Verb("next", HelpText = "Show the next train information at a specific station.")]
+    [Verb("next", HelpText = "Show the next train information at a specific station. Syntax: \"next <STATION NAME>\"")]
     class NextStationInfoOptions
     {
-        [Option('s', "station", Required = true, HelpText = "Name of the station whose information is shown.")]
+        [Value(0, MetaName = "Station", Required = true, HelpText = "Name of the station whose information is to be displayed.")]
+        //[Option('s', "station", Required = true, HelpText = "Name of the station whose information is shown.")]
         public string Station { get; set; }
 
         [Option('m', "minutes", Required = false, HelpText = "Trains shown for the next X minutes. Default 15 minutes.")]
